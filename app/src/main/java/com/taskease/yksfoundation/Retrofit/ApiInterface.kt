@@ -1,8 +1,10 @@
 package com.taskease.yksfoundation.Retrofit
 
 
+import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import retrofit2.Call
 import retrofit2.http.Body
@@ -18,4 +20,6 @@ interface ApiInterface {
     @POST("auth/user/register/society/{id}")
     fun registerUser(@Path("id") id : Int , @Body model : UserRegisterRequestModel) : Call<UserRegisterResponseModel>
 
+    @POST("auth/login")
+    fun login(@Body model : LoginRequestModel) : Call<LoginResponseModel>
 }

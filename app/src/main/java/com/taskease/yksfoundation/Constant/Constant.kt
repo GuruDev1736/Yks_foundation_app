@@ -12,7 +12,7 @@ import java.util.Locale
 object Constant {
 
      fun success(context: Context, message: String) {
-        Toasty.error(context, message, Toast.LENGTH_SHORT, true).show();
+        Toasty.success(context, message, Toast.LENGTH_SHORT, true).show();
     }
 
     fun error(context: Context, message: String) {
@@ -28,7 +28,7 @@ object Constant {
         datePicker.show((context as androidx.fragment.app.FragmentActivity).supportFragmentManager, "DATE_PICKER")
 
         datePicker.addOnPositiveButtonClickListener { selection ->
-            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val selectedDate = sdf.format(Date(selection))
             textView.setText(selectedDate)
         }

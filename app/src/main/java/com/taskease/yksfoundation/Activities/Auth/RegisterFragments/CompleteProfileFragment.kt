@@ -206,7 +206,10 @@ class CompleteProfileFragment : Fragment() {
             dialog.dismiss()
         }
 
-        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setLayout(
+            (context.resources.displayMetrics.widthPixels * 0.8).toInt(), // 90% of screen width
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
