@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.taskease.yksfoundation" />
+                  <option name="mobileSdkAppId" value="1:932292840584:android:037b44c2a17c5734fea33d" />
+                  <option name="projectId" value="societyapp-3d691" />
+                  <option name="projectNumber" value="932292840584" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

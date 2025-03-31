@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.permissionx.guolindev.PermissionX
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.databinding.ActivityMainBinding
 
@@ -25,11 +27,22 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        Handler(Looper.getMainLooper()).postDelayed(object : Runnable{
-            override fun run() {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                finish()
+        PermissionX.init(this)
+            .permissions(android.Manifest.permission.CAMERA , android.Manifest.permission.CALL_PHONE)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
             }
-        },1000)
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    Handler(Looper.getMainLooper()).postDelayed(object : Runnable{
+                        override fun run() {
+                            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                            finish()
+                        }
+                    },1000)
+                } else {
+                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

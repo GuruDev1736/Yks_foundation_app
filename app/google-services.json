@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "932292840584",
+    "project_id": "societyapp-3d691",
+    "storage_bucket": "societyapp-3d691.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932292840584:android:870101ece22eb308fea33d",
+        "android_client_info": {
+          "package_name": "com.taskease.MysocietyCare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbI9DODGgyJ_lw4es59CUvSqxagLKup3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932292840584:android:037b44c2a17c5734fea33d",
+        "android_client_info": {
+          "package_name": "com.taskease.yksfoundation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbI9DODGgyJ_lw4es59CUvSqxagLKup3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
