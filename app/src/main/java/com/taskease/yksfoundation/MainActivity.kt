@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.permissionx.guolindev.PermissionX
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
+import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        SharedPreferenceManager.init(this@MainActivity)
 
         PermissionX.init(this)
             .permissions(android.Manifest.permission.CAMERA , android.Manifest.permission.CALL_PHONE)

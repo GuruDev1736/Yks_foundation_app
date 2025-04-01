@@ -7,47 +7,49 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.taskease.yksfoundation.Activities.Auth.ApprovalScreen
+import com.taskease.yksfoundation.Activities.Auth.ForgotPassword.ValidateOTPActivity
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
-import com.taskease.yksfoundation.Activities.HomeActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
-import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
-import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
-import com.taskease.yksfoundation.databinding.ActivityEmailBinding
+import com.taskease.yksfoundation.databinding.ActivityChangePasswordBinding
 import okio.IOException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EmailActivity : AppCompatActivity() {
+class ChangePasswordActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityEmailBinding
+    private lateinit var binding : ActivityChangePasswordBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEmailBinding.inflate(layoutInflater)
+        binding = ActivityChangePasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.submit.setOnClickListener {
-            val email = binding.email.text.toString()
-            if (valid(email))
+
+            val password = binding.password.text.toString()
+            val confirmPassword = binding.confirmPassword.text.toString()
+
+            if (valid(password,confirmPassword))
             {
-                callSendOtp(email)
+                callChangePassword(confirmPassword)
             }
         }
     }
 
-    private fun callSendOtp(email : String)
-    {
+    private fun callChangePassword(confirmPassword: String) {
+
+        val email = intent.getStringExtra("email").toString()
+
         val progress = CustomProgressDialog(this)
         progress.show()
 
         try {
-            RetrofitInstance.getInstance().sendOtp(email).enqueue(object :
+            RetrofitInstance.getInstance().changePassword(email,confirmPassword).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,
@@ -58,16 +60,18 @@ class EmailActivity : AppCompatActivity() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-                                startActivity(Intent(this@EmailActivity, ValidateOTPActivity::class.java)
-                                    .putExtra("email",email))
+                                Constant.success(this@ChangePasswordActivity, data.MSG)
+                                val intent = Intent(this@ChangePasswordActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
                             } else {
-                                Constant.error(this@EmailActivity, data.MSG)
+                                Constant.error(this@ChangePasswordActivity, data.MSG)
                             }
                         } else {
-                            Constant.error(this@EmailActivity, "No data received")
+                            Constant.error(this@ChangePasswordActivity, "No data received")
                         }
                     } else {
-                        Constant.error(this@EmailActivity, "Response unsuccessful")
+                        Constant.error(this@ChangePasswordActivity, "Response unsuccessful")
                         Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                     }
                 }
@@ -75,9 +79,9 @@ class EmailActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
                     progress.dismiss()
                     if (t is IOException) {
-                        Constant.error(this@EmailActivity, "Network error")
+                        Constant.error(this@ChangePasswordActivity, "Network error")
                     } else {
-                        Constant.error(this@EmailActivity, "Error: ${t.message}")
+                        Constant.error(this@ChangePasswordActivity, "Error: ${t.message}")
                     }
                 }
             })
@@ -87,12 +91,24 @@ class EmailActivity : AppCompatActivity() {
         }
     }
 
-    private fun valid(email : String) : Boolean{
-
-        if (email.isEmpty())
+    private fun valid(password: String, confirmPassword: String): Boolean {
+        if (password.isEmpty())
         {
-            binding.email.error = "Email is required"
-            binding.email.requestFocus()
+            binding.password.error = "Please enter password"
+            binding.password.requestFocus()
+            return false
+        }
+        if (confirmPassword.isEmpty())
+        {
+            binding.confirmPassword.error = "Please enter confirm password"
+            binding.confirmPassword.requestFocus()
+            return false
+
+        }
+        if (password != confirmPassword)
+        {
+            binding.confirmPassword.error = "Password does not match"
+            binding.confirmPassword.requestFocus()
             return false
         }
         return true

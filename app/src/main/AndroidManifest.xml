@@ -25,6 +25,15 @@
         android:theme="@style/Theme.YksFoundation"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SuperAdmin.SuperAdminHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Auth.ForgotPassword.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Auth.ForgotPassword.ValidateOTPActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Auth.ApprovalScreen"
             android:exported="false" />
         <activity

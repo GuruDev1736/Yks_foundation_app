@@ -7,47 +7,53 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.taskease.yksfoundation.Activities.Auth.ApprovalScreen
-import com.taskease.yksfoundation.Activities.Auth.LoginActivity
-import com.taskease.yksfoundation.Activities.HomeActivity
+import com.taskease.yksfoundation.Activities.Auth.ForgotPassword.EmailActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
-import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
-import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
-import com.taskease.yksfoundation.databinding.ActivityEmailBinding
+import com.taskease.yksfoundation.databinding.ActivityValidateOtpactivityBinding
 import okio.IOException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EmailActivity : AppCompatActivity() {
+class ValidateOTPActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityEmailBinding
+    private lateinit var binding : ActivityValidateOtpactivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEmailBinding.inflate(layoutInflater)
+        binding = ActivityValidateOtpactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.submit.setOnClickListener {
-            val email = binding.email.text.toString()
-            if (valid(email))
+            val otp  = binding.otpView.otp.toString()
+
+            if (otp.isEmpty())
             {
-                callSendOtp(email)
+                binding.otpView.showError()
+                return@setOnClickListener
+            }
+            else
+            {
+                callValidateOtp(otp)
             }
         }
     }
 
-    private fun callSendOtp(email : String)
+
+    private fun callValidateOtp(otp : String)
     {
+
+        val email = intent.getStringExtra("email").toString()
+
         val progress = CustomProgressDialog(this)
         progress.show()
 
         try {
-            RetrofitInstance.getInstance().sendOtp(email).enqueue(object :
+            RetrofitInstance.getInstance().validateOtp(email,otp).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,
@@ -58,16 +64,17 @@ class EmailActivity : AppCompatActivity() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-                                startActivity(Intent(this@EmailActivity, ValidateOTPActivity::class.java)
+                                startActivity(Intent(this@ValidateOTPActivity,
+                                    ChangePasswordActivity::class.java)
                                     .putExtra("email",email))
                             } else {
-                                Constant.error(this@EmailActivity, data.MSG)
+                                Constant.error(this@ValidateOTPActivity, data.MSG)
                             }
                         } else {
-                            Constant.error(this@EmailActivity, "No data received")
+                            Constant.error(this@ValidateOTPActivity, "No data received")
                         }
                     } else {
-                        Constant.error(this@EmailActivity, "Response unsuccessful")
+                        Constant.error(this@ValidateOTPActivity, "Response unsuccessful")
                         Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                     }
                 }
@@ -75,9 +82,9 @@ class EmailActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
                     progress.dismiss()
                     if (t is IOException) {
-                        Constant.error(this@EmailActivity, "Network error")
+                        Constant.error(this@ValidateOTPActivity, "Network error")
                     } else {
-                        Constant.error(this@EmailActivity, "Error: ${t.message}")
+                        Constant.error(this@ValidateOTPActivity, "Error: ${t.message}")
                     }
                 }
             })
@@ -85,16 +92,5 @@ class EmailActivity : AppCompatActivity() {
             e.printStackTrace()
             progress.dismiss()
         }
-    }
-
-    private fun valid(email : String) : Boolean{
-
-        if (email.isEmpty())
-        {
-            binding.email.error = "Email is required"
-            binding.email.requestFocus()
-            return false
-        }
-        return true
     }
 }

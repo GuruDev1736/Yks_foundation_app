@@ -7,9 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.taskease.yksfoundation.Activities.Auth.ForgotPassword.EmailActivity
 import com.taskease.yksfoundation.Activities.HomeActivity
+import com.taskease.yksfoundation.Activities.SuperAdmin.SuperAdminHomeActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
+import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponse
@@ -35,8 +38,15 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.email.setText(SharedPreferenceManager.getString(SharedPreferenceManager.EMAIL))
+        binding.password.setText(SharedPreferenceManager.getString(SharedPreferenceManager.PASSWORD))
+
         binding.register.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        binding.forgotPassword.setOnClickListener {
+            startActivity(Intent(this, EmailActivity::class.java))
         }
 
         binding.login.setOnClickListener {
@@ -83,19 +93,26 @@ class LoginActivity : AppCompatActivity() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
+
+                                SharedPreferenceManager.saveString(SharedPreferenceManager.EMAIL,email)
+                                SharedPreferenceManager.saveString(SharedPreferenceManager.PASSWORD,password)
+                                SharedPreferenceManager.saveInt(SharedPreferenceManager.USER_ID,data.CONTENT.userId)
+                                SharedPreferenceManager.saveString(SharedPreferenceManager.TOKEN,"Bearer "+data.CONTENT.token)
+                                SharedPreferenceManager.saveString(SharedPreferenceManager.ROLE,data.CONTENT.userRole)
+
                                 if (data.CONTENT.enabled) {
-                                    startActivity(
-                                        Intent(
-                                            this@LoginActivity,
-                                            HomeActivity::class.java
+                                    if (data.CONTENT.userRole == "ROLE_SUPER_ADMIN")
+                                    {
+                                        startActivity(
+                                            Intent(
+                                                this@LoginActivity,
+                                                SuperAdminHomeActivity::class.java
+                                            )
                                         )
-                                    )
-                                    finish()
+                                        finish()
+                                    }
                                 } else {
-                                    Constant.error(
-                                        this@LoginActivity,
-                                        "Your account is disabled , Get Approved by admin"
-                                    )
+                                    startActivity(Intent(this@LoginActivity, ApprovalScreen::class.java))
                                 }
                             } else {
                                 Constant.error(this@LoginActivity, data.MSG)

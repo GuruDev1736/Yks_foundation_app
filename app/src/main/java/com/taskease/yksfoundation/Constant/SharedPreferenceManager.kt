@@ -7,7 +7,11 @@ object SharedPreferenceManager {
 
     private const val PREF_NAME = "YKSFoundation"
 
-     const val TOKEN = "token"
+    const val TOKEN = "token"
+    const val EMAIL = "email"
+    const val PASSWORD = "password"
+    const val USER_ID = "user_id"
+    const val ROLE = "role"
 
     private lateinit var sharedPreferences: SharedPreferences
 
