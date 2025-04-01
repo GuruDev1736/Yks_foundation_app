@@ -113,26 +113,13 @@ class LoginActivity : AppCompatActivity() {
                     progress.dismiss()
 
                     if (t is IOException) {
-                        Constant.error(this@LoginActivity, "Network error. Please check your connection.")
+                        Constant.error(
+                            this@LoginActivity,
+                            "Network error. Please check your connection."
+                        )
                         Log.e("LoginActivity", "Network error", t)
                         return
                     }
-
-                    if (t is HttpException) {
-                        val errorBody = t.response()?.errorBody()?.string()
-                        if (!errorBody.isNullOrEmpty()) {
-                            try {
-                                val jsonObject = JSONObject(errorBody)
-                                val errorMessage = jsonObject.optString("MSG", "Invalid Email or Password") // Extract MSG field
-                                Constant.error(this@LoginActivity, errorMessage)
-                            } catch (e: JSONException) {
-                                Constant.error(this@LoginActivity, "Error parsing response")
-                            }
-                        }
-                    } else {
-                        Constant.error(this@LoginActivity, "Invalid Email or Password")
-                    }
-
                     Log.e("LoginActivity", "API call failed", t)
                 }
             })

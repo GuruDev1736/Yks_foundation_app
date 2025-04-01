@@ -25,6 +25,12 @@
         android:theme="@style/Theme.YksFoundation"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Auth.ApprovalScreen"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.Auth.ForgotPassword.EmailActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home" />
