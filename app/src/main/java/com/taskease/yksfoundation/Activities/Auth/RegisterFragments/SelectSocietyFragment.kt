@@ -67,7 +67,7 @@ class SelectSocietyFragment : Fragment() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-                                adapter = SocietyAdapter(requireContext(), data.CONTENT)
+                                adapter = SocietyAdapter(requireContext(), data.CONTENT,"registration")
                                 binding.recyclerView.adapter = adapter
                             } else {
                                 Constant.error(requireContext(), data.MSG)

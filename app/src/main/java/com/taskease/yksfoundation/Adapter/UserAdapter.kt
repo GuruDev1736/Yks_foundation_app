@@ -1,24 +1,18 @@
 package com.taskease.yksfoundation.Adapter
 
+
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
-import com.taskease.yksfoundation.Activities.Auth.RegisterActivity
-import com.taskease.yksfoundation.Activities.SuperAdmin.OptionActivity
-import com.taskease.yksfoundation.ViewModel.RegisterViewModel
-import com.taskease.yksfoundation.Model.ResponseModel.Society
+import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySociety
 import com.taskease.yksfoundation.databinding.SocietyLayoutBinding
 import java.util.Locale
 
-class SocietyAdapter(val context: Context , val list : List<Society> , val code : String) : RecyclerView.Adapter<SocietyAdapter.onViewHolder>() {
+class UserAdapter(val context: Context, val list : List<GetUserBySociety>) : RecyclerView.Adapter<UserAdapter.onViewHolder>() {
 
-    private lateinit var viewModel : RegisterViewModel
-    private var filteredList: List<Society> = list
+    private var filteredList: List<GetUserBySociety> = list
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -35,31 +29,8 @@ class SocietyAdapter(val context: Context , val list : List<Society> , val code 
 
         val data = filteredList[position]
         holder.binding.apply {
-            societyName.text = data.name
+            societyName.text = data.fullName
             societyAddress.text = data.address
-        }
-
-        if (code == "registration")
-        {
-            val viewModelStoreOwner = context as? ViewModelStoreOwner
-            if (viewModelStoreOwner != null) {
-                viewModel = ViewModelProvider(viewModelStoreOwner).get(RegisterViewModel::class.java)
-            }
-
-
-            holder.itemView.setOnClickListener {
-                viewModel.selectSociety(data.id)
-                val viewPager = (context as RegisterActivity).getViewPager()
-                viewPager.currentItem += 1
-            }
-        }
-
-        if (code == "society")
-        {
-            holder.itemView.setOnClickListener {
-                context.startActivity(Intent(context, OptionActivity::class.java)
-                    .putExtra("id",data.id))
-            }
         }
     }
 
@@ -75,7 +46,7 @@ class SocietyAdapter(val context: Context , val list : List<Society> , val code 
                     list
                 } else {
                     list.filter {
-                        it.name.lowercase(Locale.getDefault()).contains(searchText) ||
+                        it.fullName.lowercase(Locale.getDefault()).contains(searchText) ||
                                 it.address.lowercase(Locale.getDefault()).contains(searchText)
                     }
                 }
@@ -83,7 +54,7 @@ class SocietyAdapter(val context: Context , val list : List<Society> , val code 
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredList = results?.values as? List<Society> ?: list
+                filteredList = results?.values as? List<GetUserBySociety> ?: list
                 notifyDataSetChanged()
             }
         }
