@@ -56,6 +56,26 @@ class AddSocietyActivity : AppCompatActivity() {
         }
     }
 
+    private fun valid(societyName: String, societyAddress: String, societyOwner: String, societyPhone: String): Boolean {
+        if (societyName.isEmpty()) {
+            Constant.error(this@AddSocietyActivity, "Society Name is required")
+            return false
+        }
+        if (societyAddress.isEmpty()) {
+            Constant.error(this@AddSocietyActivity, "Society Address is required")
+            return false
+        }
+        if (societyOwner.isEmpty()) {
+            Constant.error(this@AddSocietyActivity, "Society Owner is required")
+            return false
+        }
+        if (societyPhone.isEmpty()) {
+            Constant.error(this@AddSocietyActivity, "Society Phone is required")
+            return false
+        }
+        return true
+    }
+
     private fun showDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.add_society_dialog, null)
         val dialog = AlertDialog.Builder(this)
@@ -93,26 +113,6 @@ class AddSocietyActivity : AppCompatActivity() {
             )
             dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         }
-    }
-
-    private fun valid(societyName: String, societyAddress: String, societyOwner: String, societyPhone: String): Boolean {
-        if (societyName.isEmpty()) {
-            Constant.error(this@AddSocietyActivity, "Society Name is required")
-            return false
-        }
-        if (societyAddress.isEmpty()) {
-            Constant.error(this@AddSocietyActivity, "Society Address is required")
-            return false
-        }
-        if (societyOwner.isEmpty()) {
-            Constant.error(this@AddSocietyActivity, "Society Owner is required")
-            return false
-        }
-        if (societyPhone.isEmpty()) {
-            Constant.error(this@AddSocietyActivity, "Society Phone is required")
-            return false
-        }
-        return true
     }
 
     private fun callAddSociety(societyName: String, societyAddress: String, societyOwner: String, societyPhone: String , dialog: Dialog)

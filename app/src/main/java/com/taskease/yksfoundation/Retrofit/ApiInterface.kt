@@ -13,6 +13,7 @@ import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -47,4 +48,13 @@ interface ApiInterface {
 
     @POST("auth/user/register/society/{id}")
     fun registerNewUser(@Path("id") id : Int , @Body model : CreateUserBySuperAdminRequestModel) : Call<UserRegisterResponseModel>
+
+    @PUT("super/changeRole/{userId}/{roleName}")
+    fun changeRole(@Path("userId") userId: Int, @Path("roleName") roleName: String): Call<UniversalModel>
+
+    @POST("auth/admin/register/society/{societyId}")
+    fun addAdmin(@Path("societyId") societyId: Int, @Body model: CreateUserBySuperAdminRequestModel): Call<UserRegisterResponseModel>
+
+    @DELETE("user/delete/{id}")
+    fun deleteUser(@Path("id") id: Int): Call<UniversalModel>
 }

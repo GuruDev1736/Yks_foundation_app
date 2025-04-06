@@ -66,5 +66,6 @@ dependencies {
     kapt ("com.github.bumptech.glide:compiler:4.16.0")
     implementation ("com.guolindev.permissionx:permissionx:1.8.1")
     implementation ("com.github.appsfeature:otp-view:1.1")
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
 
 }

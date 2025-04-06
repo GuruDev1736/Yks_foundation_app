@@ -1,6 +1,8 @@
 package com.taskease.yksfoundation.Constant
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.EditText
 import android.widget.Toast
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -33,6 +35,14 @@ object Constant {
             textView.setText(selectedDate)
         }
     }
+
+    fun callPhone(phoneNo: String, context: Context) {
+        val intent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNo")
+        }
+        context.startActivity(intent)
+    }
+
 
 
 }
