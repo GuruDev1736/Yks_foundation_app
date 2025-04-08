@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.taskease.yksfoundation.Activities.SuperAdmin.AddAdminActivity
@@ -50,9 +51,7 @@ class UserAdapter(val context: Context, val list : List<GetUserBySociety>) : Rec
             }
 
             btnChangeRole.setOnClickListener {
-
-                // TODO: Remaiing to implement dialog for the roles
-                callChangeRole(data.id)
+                ShowRoleDialog(data.id)
             }
 
             btnDelete.setOnClickListener {
@@ -60,6 +59,30 @@ class UserAdapter(val context: Context, val list : List<GetUserBySociety>) : Rec
             }
 
         }
+    }
+
+    private fun ShowRoleDialog(id: Int)
+    {
+        val builder = AlertDialog.Builder(context)
+
+        builder.setTitle("Change Role")
+        builder.setMessage("Are you sure you want to change the role?")
+
+        builder.setPositiveButton("ROLE_ADMIN") { dialog, which ->
+            callChangeRole(id,"ROLE_ADMIN")
+        }
+
+        builder.setNegativeButton("ROLE_USER") { dialog, which ->
+            callChangeRole(id,"ROLE_USER")
+        }
+
+        builder.setNeutralButton("Cancel") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun deleteUser(id: Int)
@@ -106,13 +129,13 @@ class UserAdapter(val context: Context, val list : List<GetUserBySociety>) : Rec
     }
 
 
-    private fun callChangeRole(id: Int)
+    private fun callChangeRole(id: Int , role : String)
     {
         val progress = CustomProgressDialog(context)
         progress.show()
 
         try {
-            RetrofitInstance.getHeaderInstance().changeRole(id,"ROLE_ADMIN").enqueue(object :
+            RetrofitInstance.getHeaderInstance().changeRole(id,role).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: retrofit2.Call<UniversalModel>,

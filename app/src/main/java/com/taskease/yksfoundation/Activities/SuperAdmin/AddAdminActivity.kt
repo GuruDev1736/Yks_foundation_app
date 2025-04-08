@@ -176,7 +176,7 @@ class AddAdminActivity : AppCompatActivity() {
         val progressDialog = CustomProgressDialog(this@AddAdminActivity)
         progressDialog.show()
         try {
-            storage.getReference("Yks/ProfilePic")
+            storage.getReference("Yks/ProfilePic/admins")
                 .child(System.currentTimeMillis().toString())
                 .putFile(uri)
                 .addOnSuccessListener { taskSnapshot ->

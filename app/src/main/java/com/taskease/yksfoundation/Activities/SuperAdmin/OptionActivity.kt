@@ -47,7 +47,7 @@ class OptionActivity : AppCompatActivity() {
                 "Add Admin" -> startActivity(Intent(this@OptionActivity, AddAdminActivity::class.java)
                     .putExtra("id",societyId))
                 "Add User" -> startActivity(Intent(this@OptionActivity,
-                    AddSocietyActivity::class.java))
+                    AddUserActivity::class.java).putExtra("id",societyId))
                 "See Chats" -> Toast.makeText(this, "Add Post clicked", Toast.LENGTH_SHORT).show()
                 "Download Excel Sheet" -> Toast.makeText(this, "Add Post clicked", Toast.LENGTH_SHORT).show()
             }
