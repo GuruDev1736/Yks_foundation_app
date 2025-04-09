@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
+import com.taskease.yksfoundation.Activities.CreatePostActivity
 import com.taskease.yksfoundation.Adapter.MenuAdapter
 import com.taskease.yksfoundation.Model.MenuItem
 import com.taskease.yksfoundation.R
@@ -32,7 +33,8 @@ class SuperAdminHomeActivity : AppCompatActivity() {
 
         val adapter = MenuAdapter(menuList) { menuItem ->
             when (menuItem.title) {
-                "Add Post" -> Toast.makeText(this, "Add Post clicked", Toast.LENGTH_SHORT).show()
+                "Add Post" -> startActivity(Intent(this@SuperAdminHomeActivity,
+                    CreatePostActivity::class.java).putExtra("isSuperAdmin",true))
                 "Add Society" -> startActivity(Intent(this@SuperAdminHomeActivity,
                     AddSocietyActivity::class.java))
                 "LogOut" -> showDialog()

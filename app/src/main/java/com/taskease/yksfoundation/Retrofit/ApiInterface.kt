@@ -2,10 +2,12 @@ package com.taskease.yksfoundation.Retrofit
 
 
 import com.taskease.yksfoundation.Model.RequestModel.AddSocietyRequestModel
+import com.taskease.yksfoundation.Model.RequestModel.CreatePostRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreateUserBySuperAdminRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
@@ -57,4 +59,10 @@ interface ApiInterface {
 
     @DELETE("user/delete/{id}")
     fun deleteUser(@Path("id") id: Int): Call<UniversalModel>
+
+    @POST("super/post/create/{userId}")
+    fun createSuperAdminPost(@Path("userId") userId: Int, @Body model: CreatePostRequestModel): Call<CreatePostResponseModel>
+
+    @GET("user/export/{societyId}")
+    fun exportUserData(@Path("societyId") societyId: Int): Call<UniversalModel>
 }

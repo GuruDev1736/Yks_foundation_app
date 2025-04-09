@@ -58,7 +58,9 @@ class SocietyAdapter(val context: Context , val list : List<Society> , val code 
         {
             holder.itemView.setOnClickListener {
                 context.startActivity(Intent(context, OptionActivity::class.java)
-                    .putExtra("id",data.id))
+                    .putExtra("id",data.id)
+                    .putExtra("societyName",data.name)
+                )
             }
         }
     }
