@@ -111,6 +111,15 @@ class LoginActivity : AppCompatActivity() {
                                         )
                                         finish()
                                     }
+                                    else if (data.CONTENT.userRole == "ROLE_ADMIN")
+                                    {
+                                        startActivity(
+                                            Intent(
+                                                this@LoginActivity,
+                                                HomeActivity::class.java
+                                            )
+                                        )
+                                    }
                                 } else {
                                     startActivity(Intent(this@LoginActivity, ApprovalScreen::class.java))
                                 }
