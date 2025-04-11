@@ -18,11 +18,9 @@ import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Activities.Auth.RegisterActivity
-import com.taskease.yksfoundation.Adapter.SocietyAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
-import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance

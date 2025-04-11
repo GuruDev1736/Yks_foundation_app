@@ -3,10 +3,7 @@ package com.taskease.yksfoundation.Activities.Auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.taskease.yksfoundation.Activities.Auth.ForgotPassword.EmailActivity
 import com.taskease.yksfoundation.Activities.HomeActivity
 import com.taskease.yksfoundation.Activities.SuperAdmin.SuperAdminHomeActivity
@@ -14,19 +11,12 @@ import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
-import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
-import com.taskease.yksfoundation.Model.ResponseModel.LoginResponse
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
-import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
-import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.ActivityLoginBinding
 import okio.IOException
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.HttpException
 import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {

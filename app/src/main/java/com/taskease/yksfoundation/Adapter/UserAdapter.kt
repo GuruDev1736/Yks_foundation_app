@@ -9,16 +9,13 @@ import android.widget.Filter
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.taskease.yksfoundation.Activities.SuperAdmin.AddAdminActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySociety
-import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.AdminCardBinding
-import com.taskease.yksfoundation.databinding.SocietyLayoutBinding
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale

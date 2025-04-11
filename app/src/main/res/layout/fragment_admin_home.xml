@@ -13,6 +13,7 @@
         android:orientation="horizontal">
 
         <EditText
+            android:id="@+id/search"
             android:layout_margin="10dp"
             android:background="@drawable/edittext_bg"
             android:layout_width="0dp"

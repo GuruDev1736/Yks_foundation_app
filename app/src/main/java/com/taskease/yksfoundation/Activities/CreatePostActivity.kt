@@ -3,29 +3,22 @@ package com.taskease.yksfoundation.Activities
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.storage.FirebaseStorage
-import com.taskease.yksfoundation.Activities.SuperAdmin.AddSocietyActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
-import com.taskease.yksfoundation.Model.RequestModel.AddSocietyRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreatePostRequestModel
-import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
@@ -145,50 +138,50 @@ class CreatePostActivity : AppCompatActivity() {
 
     private fun CreatePostBySuperAdmin(caption: String, location: String, finalUrls: String) {
 
-        val progress = CustomProgressDialog(this)
-        progress.show()
+            val progress = CustomProgressDialog(this)
+            progress.show()
 
-        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+            val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
-        try {
+            try {
 
-            val model = CreatePostRequestModel(location,finalUrls,caption)
-            RetrofitInstance.getHeaderInstance().createSuperAdminPost(userId,model).enqueue(object :
-                Callback<CreatePostResponseModel> {
-                override fun onResponse(
-                    call: retrofit2.Call<CreatePostResponseModel>,
-                    response: Response<CreatePostResponseModel>
-                ) {
-                    progress.dismiss()
-                    if (response.isSuccessful) {
-                        val data = response.body()
-                        if (data != null) {
-                            if (data.STS == "200") {
-                                Constant.success(this@CreatePostActivity, data.MSG)
-                                finish()
+                val model = CreatePostRequestModel(location,finalUrls,caption)
+                RetrofitInstance.getHeaderInstance().createSuperAdminPost(userId,model).enqueue(object :
+                    Callback<CreatePostResponseModel> {
+                    override fun onResponse(
+                        call: retrofit2.Call<CreatePostResponseModel>,
+                        response: Response<CreatePostResponseModel>
+                    ) {
+                        progress.dismiss()
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            if (data != null) {
+                                if (data.STS == "200") {
+                                    Constant.success(this@CreatePostActivity, data.MSG)
+                                    finish()
+                                } else {
+                                    Constant.error(this@CreatePostActivity, data.MSG)
+                                }
                             } else {
-                                Constant.error(this@CreatePostActivity, data.MSG)
+                                Constant.error(this@CreatePostActivity, "No data received")
                             }
                         } else {
-                            Constant.error(this@CreatePostActivity, "No data received")
+                            Constant.error(this@CreatePostActivity, "Response unsuccessful")
+                            Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                         }
-                    } else {
-                        Constant.error(this@CreatePostActivity, "Response unsuccessful")
-                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                     }
-                }
 
-                override fun onFailure(call: retrofit2.Call<CreatePostResponseModel>, t: Throwable) {
-                    progress.dismiss()
-                    Constant.error(this@CreatePostActivity, "Something went wrong: ${t.message}")
-                    Log.e("SelectSocietyFragment", "API call failed", t)
-                }
-            })
-        } catch (e: Exception) {
-            progress.dismiss()
-            Constant.error(this@CreatePostActivity, "Exception: ${e.message}")
-            e.printStackTrace()
-        }
+                    override fun onFailure(call: retrofit2.Call<CreatePostResponseModel>, t: Throwable) {
+                        progress.dismiss()
+                        Constant.error(this@CreatePostActivity, "Something went wrong: ${t.message}")
+                        Log.e("SelectSocietyFragment", "API call failed", t)
+                    }
+                })
+            } catch (e: Exception) {
+                progress.dismiss()
+                Constant.error(this@CreatePostActivity, "Exception: ${e.message}")
+                e.printStackTrace()
+            }
     }
 
 

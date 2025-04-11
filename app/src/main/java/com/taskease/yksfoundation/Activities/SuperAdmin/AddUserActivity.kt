@@ -10,14 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
-import com.taskease.yksfoundation.Activities.SuperAdmin.AddAdminActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Model.RequestModel.CreateUserBySuperAdminRequestModel
@@ -25,7 +21,6 @@ import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.ActivityAddUserBinding
-import de.hdodenhof.circleimageview.CircleImageView
 import retrofit2.Callback
 import retrofit2.Response
 

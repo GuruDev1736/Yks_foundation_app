@@ -8,7 +8,9 @@ import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
@@ -65,4 +67,13 @@ interface ApiInterface {
 
     @GET("user/export/{societyId}")
     fun exportUserData(@Path("societyId") societyId: Int): Call<UniversalModel>
+
+    @GET("post/")
+    fun getAllPost() : Call<GetAllPostResponseModel>
+
+    @POST("likes/like/{userId}/{postId}")
+    fun likePost(@Path("userId") userId: Int, @Path("postId") postId: Int): Call<UniversalModel>
+
+    @GET("likes/users/{postId}")
+    fun getLikedUsers(@Path("postId") postId: Int?): Call<GetUserByPostResponseModel>
 }
