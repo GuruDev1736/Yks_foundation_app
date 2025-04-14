@@ -89,6 +89,7 @@ class LoginActivity : AppCompatActivity() {
                                 SharedPreferenceManager.saveInt(SharedPreferenceManager.USER_ID,data.CONTENT.userId)
                                 SharedPreferenceManager.saveString(SharedPreferenceManager.TOKEN,"Bearer "+data.CONTENT.token)
                                 SharedPreferenceManager.saveString(SharedPreferenceManager.ROLE,data.CONTENT.userRole)
+                                SharedPreferenceManager.saveInt(SharedPreferenceManager.SOCIETY_ID,data.CONTENT.societyId)
 
                                 if (data.CONTENT.enabled) {
                                     if (data.CONTENT.userRole == "ROLE_SUPER_ADMIN")

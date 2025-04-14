@@ -10,6 +10,8 @@ import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.GetAllUserDisabledResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.GetCommentByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
@@ -76,4 +78,18 @@ interface ApiInterface {
 
     @GET("likes/users/{postId}")
     fun getLikedUsers(@Path("postId") postId: Int?): Call<GetUserByPostResponseModel>
+
+    @GET("comment/{postId}")
+    fun getComments(@Path("postId") postId: Int?): Call<GetCommentByPostResponseModel>
+
+    @GET("admin/disable/user/{societyId}")
+    fun disableUser(@Path("societyId") societyId: Int): Call<GetAllUserDisabledResponseModel>
+
+    @PUT("admin/enable/user/{userId}")
+    fun enableUser(@Path("userId") userId: Int): Call<UniversalModel>
+
+    @PUT("admin/disable/user/{userId}")
+    fun rejectUser(@Path("userId") userId: Int): Call<UniversalModel>
+
 }
+

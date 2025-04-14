@@ -20,6 +20,7 @@ import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPost
+import com.taskease.yksfoundation.Model.ResponseModel.GetCommentByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import com.taskease.yksfoundation.R
@@ -83,6 +84,10 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
             textLikes.setOnClickListener {
                 callLikeBottomSheet(data.id)
             }
+
+            iconComment.setOnClickListener {
+                callCommentBottomSheet(data.id)
+            }
         }
     }
 
@@ -133,6 +138,64 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
                 }
 
                 override fun onFailure(call: Call<GetUserByPostResponseModel>, t: Throwable) {
+                    progress.dismiss()
+                    Constant.error(context, "Something went wrong: ${t.message}")
+                }
+            })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(context, "Exception: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun callCommentBottomSheet(postId: Int) {
+        val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(context).inflate(R.layout.like_bottom_sheet_layout, null)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerComments)
+        val title = view.findViewById<TextView>(R.id.title)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        title.text = "Comments"
+
+        bottomSheetDialog.setContentView(view)
+
+        val bottomSheet = bottomSheetDialog.delegate.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        bottomSheet?.let {
+            val behavior = BottomSheetBehavior.from(it)
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            behavior.peekHeight = 600
+            behavior.isFitToContents = false
+            behavior.isDraggable = true
+        }
+
+        bottomSheetDialog.show()
+
+        val progress = CustomProgressDialog(context)
+        progress.show()
+
+        try {
+            RetrofitInstance.getHeaderInstance().getComments(postId).enqueue(object :
+                Callback<GetCommentByPostResponseModel> {
+                override fun onResponse(
+                    call: Call<GetCommentByPostResponseModel>,
+                    response: Response<GetCommentByPostResponseModel>
+                ) {
+                    progress.dismiss()
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        if (data != null && data.STS == "200") {
+                            val adapter = CommentAdapter(context,data.CONTENT)
+                            recyclerView.adapter = adapter
+                        } else {
+                            Constant.error(context, data?.MSG ?: "No message")
+                        }
+                    } else {
+                        Constant.error(context, "Response unsuccessful")
+                    }
+                }
+
+                override fun onFailure(call: Call<GetCommentByPostResponseModel>, t: Throwable) {
                     progress.dismiss()
                     Constant.error(context, "Something went wrong: ${t.message}")
                 }

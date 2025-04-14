@@ -1,60 +1,84 @@
 package com.taskease.yksfoundation.Activities.Admin
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.taskease.yksfoundation.Activities.SuperAdmin.AddAdminActivity
+import com.taskease.yksfoundation.Activities.SuperAdmin.AddUserActivity
+import com.taskease.yksfoundation.Activities.SuperAdmin.OptionActivity
+import com.taskease.yksfoundation.Activities.SuperAdmin.subMenuAdapter
+import com.taskease.yksfoundation.Constant.SharedPreferenceManager
+import com.taskease.yksfoundation.Model.MenuItem
 import com.taskease.yksfoundation.R
+import com.taskease.yksfoundation.databinding.FragmentRequestBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [RequestFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RequestFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding : FragmentRequestBinding
+
+    private val menuList = listOf(
+        MenuItem("Post Approval", R.drawable.admin),
+        MenuItem("User Approval", R.drawable.user),
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_request, container, false)
+        binding = FragmentRequestBinding.inflate(inflater,container,false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment RequestFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            RequestFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
+
+        val adapter = subMenuAdapter(menuList) { menuItem ->
+            when (menuItem.title) {
+                "Post Approval" -> startActivity(Intent(requireContext(), PostApprovalActivity::class.java)
+                    .putExtra("id",societyId))
+                "User Approval" -> startActivity(Intent(requireContext(),
+                    UserApproval::class.java).putExtra("id",societyId))
             }
+        }
+
+        binding.recyclerView.adapter = adapter
+
     }
+}
+
+
+class RequestAdapter(private val menuList: List<MenuItem>, private val listener: (MenuItem) -> Unit) :
+    RecyclerView.Adapter<RequestAdapter.MenuViewHolder>() {
+
+    class MenuViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val menuIcon: ImageView = view.findViewById(R.id.menuIcon)
+        val menuTitle: TextView = view.findViewById(R.id.menuTitle)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_menu_card, parent, false)
+        return MenuViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: MenuViewHolder, position: Int) {
+        val menuItem = menuList[position]
+        holder.menuTitle.text = menuItem.title
+        holder.menuIcon.setImageResource(menuItem.icon)
+        holder.itemView.setOnClickListener { listener(menuItem) }
+    }
+
+    override fun getItemCount(): Int = menuList.size
 }
