@@ -48,7 +48,7 @@ class UserApproval : AppCompatActivity() {
 
         val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
 
-            try {
+        try {
                 RetrofitInstance.getHeaderInstance().disableUser(societyId).enqueue(object :
                     Callback<GetAllUserDisabledResponseModel> {
                     override fun onResponse(
