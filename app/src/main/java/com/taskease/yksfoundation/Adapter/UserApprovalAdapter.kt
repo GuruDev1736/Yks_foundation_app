@@ -21,7 +21,8 @@ import org.w3c.dom.Comment
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserApprovalAdapter(val context: Context, val list: List<User>) :
+
+class UserApprovalAdapter(val context: Context, val list: List<User> , val listener: () -> Unit) :
     RecyclerView.Adapter<UserApprovalAdapter.ViewHolder>() {
 
     class ViewHolder(val binding : UserApprovalLayoutBinding) : RecyclerView.ViewHolder(binding.root)
@@ -66,6 +67,7 @@ class UserApprovalAdapter(val context: Context, val list: List<User>) :
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
+                                listener.invoke()
                                 Constant.success(context,data.MSG)
                             } else {
                                 Constant.error(context, data.MSG)
@@ -108,6 +110,7 @@ class UserApprovalAdapter(val context: Context, val list: List<User>) :
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
+                                listener.invoke()
                                 Constant.success(context,data.MSG)
                             } else {
                                 Constant.error(context, data.MSG)

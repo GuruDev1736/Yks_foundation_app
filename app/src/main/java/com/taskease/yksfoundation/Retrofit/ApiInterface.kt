@@ -94,5 +94,14 @@ interface ApiInterface {
     @GET("admin/disable/post/{societyId}")
     fun getAllDisabledPost(@Path("societyId") societyId: Int): Call<GetAllPostResponseModel>
 
+    @PUT("admin/enable/post/{postId}")
+    fun enablePost(@Path("postId") postId: Int): Call<UniversalModel>
+
+    @PUT("admin/disable/post/{postId}")
+    fun rejectPost(@Path("postId") postId: Int): Call<UniversalModel>
+
+    @POST("post/create/{userId}/{societyId}")
+    fun createPost(@Path("userId") userId: Int, @Path("societyId") societyId: Int, @Body model: CreatePostRequestModel): Call<CreatePostResponseModel>
+
 }
 

@@ -102,37 +102,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/approve"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textColor="@color/white"
                     android:backgroundTint="@android:color/holo_green_dark"
                     android:text="Approve"/>
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/reject"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
+                    android:layout_weight="1"
                     android:backgroundTint="@android:color/holo_red_dark"
                     android:text="Reject"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
 
             </LinearLayout>
         </LinearLayout>

@@ -66,5 +66,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp" />
 
+
+        <LinearLayout
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/approve"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:backgroundTint="@android:color/holo_green_dark"
+                android:text="Approve"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/reject"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:text="Reject"/>
+
+
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

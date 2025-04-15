@@ -62,6 +62,9 @@ class PostApprovalActivity : AppCompatActivity() {
                         if (data != null) {
                             if (data.STS == "200") {
                                 adapter = PostApprovalAdapter(this@PostApprovalActivity,data.CONTENT)
+                                {
+                                    getAllDisabledPost()
+                                }
                                 binding.recyclerView.adapter = adapter
                             } else {
                                 Constant.error(this@PostApprovalActivity, data.MSG)

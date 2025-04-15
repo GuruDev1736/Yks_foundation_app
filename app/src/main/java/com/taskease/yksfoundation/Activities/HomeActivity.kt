@@ -90,7 +90,7 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_createPost -> {
-                    startActivity(Intent(this@HomeActivity, CreatePostActivity::class.java))
+                    startActivity(Intent(this@HomeActivity, CreatePostActivity::class.java).putExtra("isSuperAdmin",false))
                     true
                 }
                 R.id.nav_requests -> {

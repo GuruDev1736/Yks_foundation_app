@@ -125,7 +125,7 @@ class CreatePostActivity : AppCompatActivity() {
                         }
                         else
                         {
-
+                            CreatePostByUser(caption,location,finalUrls)
                         }
                     }
                 }
@@ -182,6 +182,55 @@ class CreatePostActivity : AppCompatActivity() {
                 Constant.error(this@CreatePostActivity, "Exception: ${e.message}")
                 e.printStackTrace()
             }
+    }
+
+    private fun CreatePostByUser(caption: String, location: String, finalUrls: String) {
+
+        val progress = CustomProgressDialog(this)
+        progress.show()
+
+        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+        val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
+
+        try {
+
+            val model = CreatePostRequestModel(location,finalUrls,caption)
+            RetrofitInstance.getHeaderInstance().createPost(userId,societyId,model).enqueue(object :
+                Callback<CreatePostResponseModel> {
+                override fun onResponse(
+                    call: retrofit2.Call<CreatePostResponseModel>,
+                    response: Response<CreatePostResponseModel>
+                ) {
+                    progress.dismiss()
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        if (data != null) {
+                            if (data.STS == "200") {
+                                Constant.success(this@CreatePostActivity, data.MSG)
+                                finish()
+                            } else {
+                                Constant.error(this@CreatePostActivity, data.MSG)
+                            }
+                        } else {
+                            Constant.error(this@CreatePostActivity, "No data received")
+                        }
+                    } else {
+                        Constant.error(this@CreatePostActivity, "Response unsuccessful")
+                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: retrofit2.Call<CreatePostResponseModel>, t: Throwable) {
+                    progress.dismiss()
+                    Constant.error(this@CreatePostActivity, "Something went wrong: ${t.message}")
+                    Log.e("SelectSocietyFragment", "API call failed", t)
+                }
+            })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(this@CreatePostActivity, "Exception: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
 

@@ -48,6 +48,7 @@ class UserApproval : AppCompatActivity() {
 
         val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
 
+
         try {
                 RetrofitInstance.getHeaderInstance().disableUser(societyId).enqueue(object :
                     Callback<GetAllUserDisabledResponseModel> {
@@ -61,6 +62,9 @@ class UserApproval : AppCompatActivity() {
                             if (data != null) {
                                 if (data.STS == "200") {
                                     adapter = UserApprovalAdapter(this@UserApproval,data.CONTENT)
+                                    {
+                                        getAllDisabledUser()
+                                    }
                                     binding.recyclerView.adapter = adapter
                                 } else {
                                     Constant.error(this@UserApproval, data.MSG)

@@ -33,7 +33,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class PostApprovalAdapter(val context: Context, val list: List<GetAllPost>) :
+class PostApprovalAdapter(val context: Context, val list: List<GetAllPost> , val listener: () -> Unit) :
     RecyclerView.Adapter<PostApprovalAdapter.ViewHolder>() {
 
     class ViewHolder(val binding : PostApprovalLayoutBinding) : RecyclerView.ViewHolder(binding.root)
@@ -52,17 +52,24 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost>) :
             textCaption.text = data.title
             imagePost.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
             imagePost.adapter = ImageAdapter(context,data.imageUrls)
+
+            approve.setOnClickListener {
+                callApprovePost(data.id)
+            }
+            reject.setOnClickListener {
+                callRejectPost(data.id)
+            }
         }
     }
 
 
-    private fun callApproveUser(id: Int) {
+    private fun callApprovePost(id: Int) {
 
         val progress = CustomProgressDialog(context)
         progress.show()
 
         try {
-            RetrofitInstance.getHeaderInstance().enableUser(id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().enablePost(id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,
@@ -73,6 +80,7 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost>) :
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
+                                listener.invoke()
                                 Constant.success(context,data.MSG)
                             } else {
                                 Constant.error(context, data.MSG)
@@ -98,13 +106,13 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost>) :
         }
     }
 
-    private fun callRejectUser(id: Int) {
+    private fun callRejectPost(id: Int) {
 
         val progress = CustomProgressDialog(context)
         progress.show()
 
         try {
-            RetrofitInstance.getHeaderInstance().rejectUser(id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().rejectPost(id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,
@@ -115,6 +123,7 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost>) :
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
+                                listener.invoke()
                                 Constant.success(context,data.MSG)
                             } else {
                                 Constant.error(context, data.MSG)
