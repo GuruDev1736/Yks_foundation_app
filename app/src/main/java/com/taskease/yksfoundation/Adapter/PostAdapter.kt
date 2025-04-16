@@ -6,7 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Filter
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
+import com.taskease.yksfoundation.Model.RequestModel.CreateCommentRequestModel
+import com.taskease.yksfoundation.Model.ResponseModel.CreateCommentResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPost
 import com.taskease.yksfoundation.Model.ResponseModel.GetCommentByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
@@ -151,10 +155,25 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
 
     private fun callCommentBottomSheet(postId: Int) {
         val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(context).inflate(R.layout.like_bottom_sheet_layout, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.comment_bottom_sheet_layout, null)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerComments)
         val title = view.findViewById<TextView>(R.id.title)
+        val send = view.findViewById<ImageButton>(R.id.send)
+        val comment = view.findViewById<EditText>(R.id.comment)
+
+        send.setOnClickListener {
+            val comment = comment.text.toString()
+            if (comment.isEmpty())
+            {
+                Constant.error(context,"Please enter a comment")
+            }
+            else
+            {
+                sendComment(postId,comment,bottomSheetDialog)
+            }
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(context)
         title.text = "Comments"
 
@@ -165,12 +184,17 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             behavior.peekHeight = 600
-            behavior.isFitToContents = false
+            behavior.isFitToContents = true
             behavior.isDraggable = true
         }
 
         bottomSheetDialog.show()
+        callGetCommentPost(postId , recyclerView)
+    }
 
+
+    private fun callGetCommentPost(postId: Int , recyclerView : RecyclerView)
+    {
         val progress = CustomProgressDialog(context)
         progress.show()
 
@@ -198,6 +222,54 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
                 override fun onFailure(call: Call<GetCommentByPostResponseModel>, t: Throwable) {
                     progress.dismiss()
                     Constant.error(context, "Something went wrong: ${t.message}")
+                }
+            })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(context, "Exception: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun sendComment(postId: Int , comment : String , bottomDialogSheet : BottomSheetDialog)
+    {
+        val progress = CustomProgressDialog(context)
+        progress.show()
+
+        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+
+        val model = CreateCommentRequestModel(comment)
+
+        try {
+            RetrofitInstance.getHeaderInstance().createComment(userId,postId,model).enqueue(object :
+                Callback<CreateCommentResponseModel> {
+                override fun onResponse(
+                    call: retrofit2.Call<CreateCommentResponseModel>,
+                    response: Response<CreateCommentResponseModel>
+                ) {
+                    progress.dismiss()
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        if (data != null) {
+                            if (data.STS == "200") {
+                                Constant.success(context, data.MSG)
+                                bottomDialogSheet.dismiss()
+                            } else {
+                                Constant.error(context, data.MSG)
+                            }
+                        } else {
+                            Constant.error(context, "No data received")
+                        }
+                    } else {
+                        Constant.error(context, "Response unsuccessful")
+                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: retrofit2.Call<CreateCommentResponseModel>, t: Throwable) {
+                    progress.dismiss()
+                    Constant.error(context, "Something went wrong: ${t.message}")
+                    Log.e("SelectSocietyFragment", "API call failed", t)
                 }
             })
         } catch (e: Exception) {

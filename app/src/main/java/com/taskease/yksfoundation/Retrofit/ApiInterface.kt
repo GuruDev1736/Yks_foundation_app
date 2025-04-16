@@ -2,16 +2,19 @@ package com.taskease.yksfoundation.Retrofit
 
 
 import com.taskease.yksfoundation.Model.RequestModel.AddSocietyRequestModel
+import com.taskease.yksfoundation.Model.RequestModel.CreateCommentRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreatePostRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreateUserBySuperAdminRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.CreateCommentResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllUserDisabledResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetCommentByPostResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.GetUserByIdResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
@@ -102,6 +105,15 @@ interface ApiInterface {
 
     @POST("post/create/{userId}/{societyId}")
     fun createPost(@Path("userId") userId: Int, @Path("societyId") societyId: Int, @Body model: CreatePostRequestModel): Call<CreatePostResponseModel>
+
+    @GET("user/{userId}")
+    fun getUserById(@Path("userId") userId: Int): Call<GetUserByIdResponseModel>
+
+    @GET("post/user/{userId}")
+    fun getUserPost(@Path("userId") userId: Int): Call<GetAllPostResponseModel>
+
+    @POST("comment/create/{userId}/{postId}")
+    fun createComment(@Path("userId") userId: Int, @Path("postId") postId: Int, @Body model: CreateCommentRequestModel): Call<CreateCommentResponseModel>
 
 }
 

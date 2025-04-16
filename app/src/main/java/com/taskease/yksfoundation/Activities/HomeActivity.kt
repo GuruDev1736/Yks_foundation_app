@@ -45,7 +45,7 @@ class HomeActivity : AppCompatActivity() {
             bottomNavigationView.inflateMenu(R.menu.bottom_nav_menu)
             setupUserNavigation()
             if (savedInstanceState == null) {
-                bottomNavigationView.selectedItemId = R.id.navigation_home
+                bottomNavigationView.selectedItemId = R.id.nav_home
             }
         } else if (role == "ROLE_ADMIN") {
             bottomNavigationView.menu.clear()
@@ -61,19 +61,18 @@ class HomeActivity : AppCompatActivity() {
     private fun setupUserNavigation() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_home -> {
+                R.id.nav_home -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment()).commit()
+                        .replace(R.id.fragment_container, AdminHomeFragment()).commit()
                     true
                 }
-                R.id.navigation_dashboard -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, DashboardFragment()).commit()
+                R.id.nav_createPost -> {
+                    startActivity(Intent(this@HomeActivity, CreatePostActivity::class.java).putExtra("isSuperAdmin",false))
                     true
                 }
-                R.id.navigation_notifications -> {
+                R.id.nav_profile -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, NotificationsFragment()).commit()
+                        .replace(R.id.fragment_container, ProfileFragment()).commit()
                     true
                 }
                 else -> false
