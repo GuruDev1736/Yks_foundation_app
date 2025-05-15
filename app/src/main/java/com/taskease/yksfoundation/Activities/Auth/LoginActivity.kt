@@ -1,17 +1,31 @@
 package com.taskease.yksfoundation.Activities.Auth
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.taskease.yksfoundation.Activities.Auth.ForgotPassword.EmailActivity
+import com.taskease.yksfoundation.Activities.Auth.RegisterFragments.CompleteProfileFragment
+import com.taskease.yksfoundation.Activities.Auth.RegisterFragments.PersonalDetailsFragment
+import com.taskease.yksfoundation.Activities.Auth.RegisterFragments.SelectSocietyFragment
+import com.taskease.yksfoundation.Activities.Auth.RegisterFragments.SocialMediaFragment
 import com.taskease.yksfoundation.Activities.HomeActivity
 import com.taskease.yksfoundation.Activities.SuperAdmin.SuperAdminHomeActivity
+import com.taskease.yksfoundation.Adapter.AuthenticationAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
+import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.ActivityLoginBinding
 import okio.IOException
@@ -28,130 +42,59 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.email.setText(SharedPreferenceManager.getString(SharedPreferenceManager.EMAIL))
-        binding.password.setText(SharedPreferenceManager.getString(SharedPreferenceManager.PASSWORD))
+        val tabs = listOf("Sign In", "Sign Up")
+        val fragments = listOf(LoginFragment(), SelectSocietyFragment())
+        val adapter = AuthenticationAdapter(this, fragments)
 
-        binding.register.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
-        }
+        binding.viewPager.adapter = adapter
+        binding.viewPager.isUserInputEnabled = false
 
-        binding.forgotPassword.setOnClickListener {
-            startActivity(Intent(this, EmailActivity::class.java))
-        }
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.customView = createTabView(tabs[position])
+        }.attach()
 
-        binding.login.setOnClickListener {
+        highlightTab(binding.tabLayout.getTabAt(0))
 
-            val email = binding.email.text.toString()
-            val password = binding.password.text.toString()
-
-            if (valid(email, password)) {
-                callLoginApi(email, password)
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                highlightTab(tab)
             }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                unhighlightTab(tab)
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if (position == 1) {
+                    startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
+                }
+            }
+        })
+    }
+
+    fun createTabView(title: String): View {
+        val view = LayoutInflater.from(this).inflate(R.layout.custom_tab, null)
+        val tabText = view.findViewById<TextView>(R.id.tabText)
+        tabText.text = title
+        return view
+    }
+
+    fun highlightTab(tab: TabLayout.Tab?) {
+        tab?.customView?.findViewById<TextView>(R.id.tabText)?.apply {
+            setTextColor(Color.WHITE)
+            background = ContextCompat.getDrawable(this@LoginActivity, R.drawable.bg_tab_active)
         }
     }
 
-    private fun valid(email: String, password: String): Boolean {
-        if (email.isEmpty()) {
-            binding.email.error = "Email is required"
-            binding.email.requestFocus()
-            return false
-        }
-        if (password.isEmpty()) {
-            binding.password.error = "Password is required"
-            binding.password.requestFocus()
-            return false
-        }
-        return true
-    }
-
-    private fun callLoginApi(email: String, password: String) {
-        val progress = CustomProgressDialog(this)
-        progress.show()
-
-        try {
-            val model = LoginRequestModel(email, password)
-
-            RetrofitInstance.getInstance().login(model).enqueue(object :
-                Callback<LoginResponseModel> {
-                override fun onResponse(
-                    call: Call<LoginResponseModel>,
-                    response: Response<LoginResponseModel>
-                ) {
-                    progress.dismiss()
-
-                    if (response.isSuccessful) {
-                        val data = response.body()
-                        if (data != null) {
-                            if (data.STS == "200") {
-
-                                SharedPreferenceManager.saveString(SharedPreferenceManager.EMAIL,email)
-                                SharedPreferenceManager.saveString(SharedPreferenceManager.PASSWORD,password)
-                                SharedPreferenceManager.saveInt(SharedPreferenceManager.USER_ID,data.CONTENT.userId)
-                                SharedPreferenceManager.saveString(SharedPreferenceManager.TOKEN,"Bearer "+data.CONTENT.token)
-                                SharedPreferenceManager.saveString(SharedPreferenceManager.ROLE,data.CONTENT.userRole)
-                                SharedPreferenceManager.saveInt(SharedPreferenceManager.SOCIETY_ID,data.CONTENT.societyId)
-
-                                if (data.CONTENT.enabled) {
-                                    if (data.CONTENT.userRole == "ROLE_SUPER_ADMIN")
-                                    {
-                                        startActivity(
-                                            Intent(
-                                                this@LoginActivity,
-                                                SuperAdminHomeActivity::class.java
-                                            )
-                                        )
-                                        finish()
-                                    }
-                                    else if (data.CONTENT.userRole == "ROLE_ADMIN")
-                                    {
-                                        startActivity(
-                                            Intent(
-                                                this@LoginActivity,
-                                                HomeActivity::class.java
-                                            )
-                                        )
-                                    }
-                                    else if (data.CONTENT.userRole == "ROLE_USER")
-                                    {
-                                        startActivity(
-                                            Intent(
-                                                this@LoginActivity,
-                                                HomeActivity::class.java
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    startActivity(Intent(this@LoginActivity, ApprovalScreen::class.java))
-                                }
-                            } else {
-                                Constant.error(this@LoginActivity, data.MSG)
-                            }
-                        } else {
-                            Constant.error(this@LoginActivity, "No data received")
-                        }
-                    } else {
-                        Constant.error(this@LoginActivity, "Response unsuccessful")
-                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<LoginResponseModel>, t: Throwable) {
-                    progress.dismiss()
-
-                    if (t is IOException) {
-                        Constant.error(
-                            this@LoginActivity,
-                            "Network error. Please check your connection."
-                        )
-                        Log.e("LoginActivity", "Network error", t)
-                        return
-                    }
-                    Log.e("LoginActivity", "API call failed", t)
-                }
-            })
-        } catch (e: Exception) {
-            e.printStackTrace()
-            progress.dismiss()
+    fun unhighlightTab(tab: TabLayout.Tab?) {
+        tab?.customView?.findViewById<TextView>(R.id.tabText)?.apply {
+            setTextColor(Color.parseColor("#2980B9"))
+            background = null
         }
     }
 }

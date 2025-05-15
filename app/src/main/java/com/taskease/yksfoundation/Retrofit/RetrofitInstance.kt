@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    val BASE_URL = "https://yks.up.railway.app/"
+    val BASE_URL = "https://wscc.quick-hire.in/"
 
     val headerClient = OkHttpClient.Builder()
         .addInterceptor(HeaderInterceptor())

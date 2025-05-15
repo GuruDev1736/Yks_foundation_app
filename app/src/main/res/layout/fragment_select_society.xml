@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/bg"
     tools:context=".Activities.Auth.RegisterFragments.SelectSocietyFragment">
 
     <com.google.android.material.card.MaterialCardView

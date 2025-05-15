@@ -6,128 +6,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:background="@drawable/bg"
     tools:context=".Activities.Auth.LoginActivity">
 
-    <com.google.android.material.card.MaterialCardView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/white">
+        android:layout_margin="10dp"
+        android:src="@drawable/logo2" />
 
-        <LinearLayout
-            android:orientation="vertical"
+    <LinearLayout
+        android:id="@+id/tab_container"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_tab_container"
+        android:orientation="horizontal">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_margin="20dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:tabGravity="fill"
+            android:backgroundTint="@color/transparent"
+            app:tabIndicatorHeight="0dp"
+            app:tabMode="fixed" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="30dp"
-                android:text="Sign In"
-                android:textColor="@color/primary"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:gravity="center"/>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp" />
 
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="Hi! Welcome back , You have been missed"
-                android:layout_gravity="center"
-                android:gravity="center"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_margin="10dp"
-                android:hint="Email"
-                app:endIconMode="clear_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/email"
-                    android:inputType="textEmailAddress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_margin="10dp"
-                android:hint="Password"
-                app:endIconMode="password_toggle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/password"
-                    android:inputType="textPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/forgotPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="Forgot Password?"
-                android:textColor="@android:color/holo_red_dark"
-                android:layout_gravity="right"
-                android:gravity="right"/>
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="Login"
-                android:textSize="18dp"
-                android:padding="15dp"
-                app:cornerRadius="10dp"
-                android:backgroundTint="@color/primary"
-                android:layout_gravity="center"
-                android:layout_margin="10dp"/>
-
-
-            <LinearLayout
-                android:id="@+id/register"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_height="wrap_content">
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18dp"
-                    android:text="Create a new account? "
-                    android:textColor="@color/black"
-                    android:layout_gravity="center"
-                    android:gravity="right"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="18dp"
-                    android:text="Register"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:layout_gravity="center"
-                    android:gravity="right"/>
-
-
-            </LinearLayout>
-
-
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
