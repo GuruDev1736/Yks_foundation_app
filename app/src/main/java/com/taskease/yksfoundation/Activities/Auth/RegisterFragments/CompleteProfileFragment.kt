@@ -98,7 +98,7 @@ class CompleteProfileFragment : Fragment() {
             viewPager.currentItem -= 1
         }
 
-        binding.addPhoto.setOnClickListener {
+        binding.profilePic.setOnClickListener {
             showCustomDialog(requireContext())
         }
 
@@ -108,10 +108,7 @@ class CompleteProfileFragment : Fragment() {
                 viewModel.profilePic(profileUrl.toString())
                 callRegisterApi()
             }
-
-
         }
-
     }
 
     private fun callRegisterApi() {
@@ -197,6 +194,7 @@ class CompleteProfileFragment : Fragment() {
 
         camera.setOnClickListener {
             openCamera()
+            dialog.dismiss()
         }
 
         gallery.setOnClickListener {

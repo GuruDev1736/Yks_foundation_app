@@ -83,7 +83,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
                 callLikeAPI(data.id)
             }
 
-            textLikes.text = "Liked By ${data.likeCount}"
+            textLikes.text = "${data.likeCount} Likes"
 
             textLikes.setOnClickListener {
                 callLikeBottomSheet(data.id)
@@ -111,7 +111,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
             behavior.peekHeight = 600
-            behavior.isFitToContents = false
+            behavior.isFitToContents = true
             behavior.isDraggable = true
         }
 

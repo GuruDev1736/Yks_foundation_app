@@ -4,14 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/bg"
     tools:context=".Activities.Auth.RegisterFragments.PersonalDetailsFragment">
-
-   <com.google.android.material.card.MaterialCardView
-       android:backgroundTint="@color/white"
-       android:layout_margin="20dp"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content">
 
        <ScrollView
            android:layout_width="match_parent"
@@ -22,6 +15,12 @@
                android:layout_height="match_parent"
                android:padding="10dp"
                android:orientation="vertical">
+
+               <ImageView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_margin="10dp"
+                   android:src="@drawable/logo2" />
 
                <TextView
                    android:layout_width="match_parent"
@@ -42,244 +41,433 @@
                    android:gravity="center"/>
 
 
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="20dp"
-                   android:hint="Full Name"
-                   app:endIconMode="clear_text"
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content">
 
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/fullName"
-                       android:inputType="textPersonName"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Email"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/email"
-                       android:inputType="textEmailAddress"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Password"
-                   app:endIconMode="password_toggle"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/password"
-                       android:inputType="textPassword"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Address"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/address"
-                       android:inputType="textMultiLine"
-                       android:layout_width="match_parent"
-                       android:lines="4"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-
-               <TextView
-                   android:layout_marginTop="10dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:textSize="18dp"
-                   android:textColor="@color/primary"
-                   android:textStyle="bold"
-                   android:text="Select Gender" />
-
-
-               <Spinner
-                   android:id="@+id/gender"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:background="@drawable/edittext_bg"
-                   android:padding="15dp"
-                   android:entries="@array/gender"
-                   android:layout_marginTop="5dp"/>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Designation"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/designation"
-                       android:inputType="text"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Anniversary Date"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/anniversaryDate"
-                       android:inputType="none"
-                       android:clickable="false"
-                       android:focusable="false"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Birth Date"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/birthDate"
-                       android:inputType="none"
-                       android:clickable="false"
-                       android:focusable="false"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="Phone No"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/phoneNo"
-                       android:inputType="phone"
-                       android:maxLength="10"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <com.google.android.material.textfield.TextInputLayout
-                   android:layout_marginTop="10dp"
-                   android:hint="WhatsApp No"
-                   app:endIconMode="clear_text"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <com.google.android.material.textfield.TextInputEditText
-                       android:id="@+id/whatsappNo"
-                       android:inputType="phone"
-                       android:maxLength="10"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"/>
-
-               </com.google.android.material.textfield.TextInputLayout>
-
-               <TextView
-                   android:layout_marginTop="10dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:textSize="18dp"
-                   android:textColor="@color/primary"
-                   android:textStyle="bold"
-                   android:text="Are You Voter From Wagoli" />
-
-               <RadioGroup
-                   android:id="@+id/voter"
-                   android:orientation="horizontal"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content">
-
-                   <RadioButton
+                   <TextView
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
+                       android:textColor="@color/black"
                        android:textStyle="bold"
-                       android:layout_marginEnd="10dp"
-                       android:text="Yes"/>
+                       android:layout_marginStart="20dp"
+                       android:text="Full Name"/>
 
-                   <RadioButton
-                       android:layout_width="wrap_content"
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
                        android:layout_height="wrap_content"
-                       android:textStyle="bold"
-                       android:text="No"/>
-               </RadioGroup>
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
 
-               <TextView
-                   android:layout_marginTop="10dp"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:textSize="18dp"
-                   android:textColor="@color/primary"
-                   android:textStyle="bold"
-                   android:text="Are you the member of cricket team" />
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/fullName"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:inputType="text" />
 
-               <RadioGroup
-                   android:id="@+id/member"
-                   android:orientation="horizontal"
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content">
 
-                   <RadioButton
+                   <TextView
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
+                       android:textColor="@color/black"
                        android:textStyle="bold"
-                       android:layout_marginEnd="10dp"
-                       android:text="Yes"/>
+                       android:layout_marginStart="20dp"
+                       android:text="Email"/>
 
-                   <RadioButton
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/email"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:inputType="textEmailAddress" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
+                       android:textColor="@color/black"
                        android:textStyle="bold"
-                       android:text="No"/>
-               </RadioGroup>
+                       android:layout_marginStart="20dp"
+                       android:text="Password"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="password_toggle">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/password"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:inputType="textPassword" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Address"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/address"
+                           android:lines="5"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:inputType="textMultiLine" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Select Gender"/>
+
+
+                   <Spinner
+                       android:id="@+id/gender"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:background="@drawable/edittext_bg"
+                       android:padding="15dp"
+                       android:entries="@array/gender"
+                       android:layout_marginTop="5dp"/>
+
+
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Designation"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/designation"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:inputType="text" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Anniversary Date"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/anniversaryDate"
+                           android:inputType="none"
+                           android:clickable="false"
+                           android:focusable="false"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Birth Date"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/birthDate"
+                           android:inputType="none"
+                           android:clickable="false"
+                           android:focusable="false"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Phone No"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/phoneNo"
+                           android:inputType="phone"
+                           android:maxLength="10"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Whatsapp No"/>
+
+
+                   <com.google.android.material.textfield.TextInputLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       app:boxCornerRadiusBottomStart="30dp"
+                       app:boxCornerRadiusTopEnd="30dp"
+                       app:boxCornerRadiusTopStart="30dp"
+                       app:boxCornerRadiusBottomEnd="30dp"
+                       app:endIconMode="clear_text">
+
+                       <com.google.android.material.textfield.TextInputEditText
+                           android:id="@+id/whatsappNo"
+                           android:inputType="phone"
+                           android:maxLength="10"
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content" />
+
+                   </com.google.android.material.textfield.TextInputLayout>
+               </LinearLayout>
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Are You Voter From Wagoli"/>
+
+                   <RadioGroup
+                       android:id="@+id/voter"
+                       android:orientation="vertical"
+                       android:layout_width="match_parent"
+                       android:padding="10dp"
+                       android:background="@drawable/edittext_bg"
+                       android:layout_height="wrap_content">
+
+                       <RadioButton
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:textStyle="bold"
+                           android:layout_marginEnd="10dp"
+                           android:text="Yes"/>
+
+                       <RadioButton
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:textStyle="bold"
+                           android:text="No"/>
+                   </RadioGroup>
+               </LinearLayout>
+
+
+               <LinearLayout
+                   android:layout_margin="10dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:textColor="@color/black"
+                       android:textStyle="bold"
+                       android:layout_marginStart="20dp"
+                       android:text="Are you the member of cricket team"/>
+
+                   <RadioGroup
+                       android:id="@+id/member"
+                       android:orientation="vertical"
+                       android:layout_width="match_parent"
+                       android:padding="10dp"
+                       android:background="@drawable/edittext_bg"
+                       android:layout_height="wrap_content">
+
+                       <RadioButton
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:textStyle="bold"
+                           android:layout_marginEnd="10dp"
+                           android:text="Yes"/>
+
+                       <RadioButton
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:textStyle="bold"
+                           android:text="No"/>
+                   </RadioGroup>
+               </LinearLayout>
 
                <LinearLayout
                    android:orientation="horizontal"
                    android:layout_width="match_parent"
                    android:layout_gravity="center"
                    android:gravity="center"
+                   android:layout_marginTop="10dp"
                    android:layout_height="wrap_content">
 
                    <com.google.android.material.button.MaterialButton
                        android:id="@+id/previous"
-                       android:layout_width="wrap_content"
+                       android:layout_width="0dp"
                        android:layout_height="wrap_content"
                        android:textColor="@color/white"
                        android:text="Previous"
                        android:textSize="18dp"
                        android:padding="15dp"
-                       app:cornerRadius="10dp"
+                       app:cornerRadius="30dp"
+                       android:layout_weight="1"
                        android:backgroundTint="@color/primary"
                        android:layout_gravity="center"
                        android:layout_margin="10dp"/>
@@ -287,17 +475,18 @@
                    <Space
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
-                       android:layout_weight="@integer/material_motion_duration_long_1"/>
+                       android:layout_weight="0.5"/>
 
                    <com.google.android.material.button.MaterialButton
                        android:id="@+id/next"
-                       android:layout_width="wrap_content"
+                       android:layout_width="0dp"
                        android:layout_height="wrap_content"
                        android:textColor="@color/white"
                        android:text="Next"
                        android:textSize="18dp"
                        android:padding="15dp"
-                       app:cornerRadius="10dp"
+                       android:layout_weight="1"
+                       app:cornerRadius="30dp"
                        android:backgroundTint="@color/primary"
                        android:layout_gravity="center"
                        android:layout_margin="10dp"/>
@@ -305,6 +494,4 @@
                </LinearLayout>
            </LinearLayout>
        </ScrollView>
-   </com.google.android.material.card.MaterialCardView>
-
 </LinearLayout>

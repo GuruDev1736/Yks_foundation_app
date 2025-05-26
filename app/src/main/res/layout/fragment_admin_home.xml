@@ -7,37 +7,59 @@
     tools:context=".Activities.Admin.AdminHomeFragment">
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@drawable/search_bg"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/search"
-            android:layout_margin="10dp"
-            android:background="@drawable/edittext_bg"
-            android:layout_width="0dp"
-            android:drawableLeft="@android:drawable/ic_menu_search"
-            android:drawablePadding="10dp"
-            android:padding="10dp"
-            android:hint="Search"
+        <TextView
+            android:id="@+id/welcomeMessage"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@color/primary"
-            android:padding="10dp"
-            android:layout_margin="10dp"
+            android:textColor="@color/white"
+            android:text="Welcome Guruprasad"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
             android:layout_gravity="center"
-            android:src="@drawable/chat"/>
+            android:background="@color/primary"/>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/search"
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_bg"
+                android:layout_width="0dp"
+                android:drawableLeft="@android:drawable/ic_menu_search"
+                android:drawablePadding="10dp"
+                android:padding="10dp"
+                android:hint="Search"
+                android:backgroundTint="@color/white"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@color/primary"
+                android:padding="10dp"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/chat"/>
+
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
+        android:padding="5dp"
         android:layout_height="match_parent"/>
 
 </LinearLayout>

@@ -4,6 +4,8 @@
     android:backgroundTint="@color/white"
     app:cardElevation="10dp"
     android:layout_margin="20dp"
+    app:strokeColor="@color/primary"
+    app:strokeWidth="2dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -33,10 +35,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Take a Photo"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:textColor="@color/white"
+            android:background="@color/primary"
             android:textAllCaps="false"
-            android:layout_marginTop="10dp"
+            android:layout_margin="10dp"
             android:layout_gravity="center"/>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -45,8 +47,9 @@
             android:layout_height="wrap_content"
             android:text="Choose from Gallery"
             android:textAllCaps="false"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:background="@color/primary"
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
             android:layout_gravity="center"/>
 
 

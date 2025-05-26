@@ -13,9 +13,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.taskease.yksfoundation.Activities.Admin.AdminHomeFragment
 import com.taskease.yksfoundation.Activities.Admin.ProfileFragment
 import com.taskease.yksfoundation.Activities.Admin.RequestFragment
-import com.taskease.yksfoundation.Activities.ui.dashboard.DashboardFragment
-import com.taskease.yksfoundation.Activities.ui.home.HomeFragment
-import com.taskease.yksfoundation.Activities.ui.notifications.NotificationsFragment
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.databinding.ActivityHomeBinding
@@ -32,11 +29,6 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
-
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = "YKS Foundation"
-
 
         val role = SharedPreferenceManager.getString(SharedPreferenceManager.ROLE,"")
 

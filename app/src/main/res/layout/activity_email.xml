@@ -8,7 +8,6 @@
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    android:background="@drawable/bg"
     tools:context=".Activities.Auth.ForgotPassword.EmailActivity">
 
     <com.google.android.material.card.MaterialCardView
@@ -43,21 +42,39 @@
                 android:layout_gravity="center"
                 android:gravity="center"/>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_margin="10dp"
-                android:hint="Email"
-                app:endIconMode="clear_text"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/email"
-                    android:inputType="textEmailAddress"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_marginStart="20dp"
+                    android:text="Enter Email"/>
+
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    app:boxCornerRadiusBottomStart="30dp"
+                    app:boxCornerRadiusTopEnd="30dp"
+                    app:boxCornerRadiusTopStart="30dp"
+                    app:boxCornerRadiusBottomEnd="30dp"
+                    app:endIconMode="clear_text">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress" />
 
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/submit"
@@ -67,7 +84,7 @@
                 android:text="Submit"
                 android:textSize="18dp"
                 android:padding="15dp"
-                app:cornerRadius="10dp"
+                app:cornerRadius="30dp"
                 android:backgroundTint="@color/primary"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"/>

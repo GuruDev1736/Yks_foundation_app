@@ -99,6 +99,7 @@ class LoginFragment : Fragment() {
                             SharedPreferenceManager.saveString(SharedPreferenceManager.TOKEN, "Bearer ${data.CONTENT.token}")
                             SharedPreferenceManager.saveString(SharedPreferenceManager.ROLE, data.CONTENT.userRole)
                             SharedPreferenceManager.saveInt(SharedPreferenceManager.SOCIETY_ID, data.CONTENT.societyId)
+                            SharedPreferenceManager.saveString(SharedPreferenceManager.USER_NAME,data.CONTENT.fullName)
 
                             // Navigate to next activity
                             if (data.CONTENT.enabled) {

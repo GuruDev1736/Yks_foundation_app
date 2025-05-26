@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.taskease.yksfoundation.Adapter.PostAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
+import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.FragmentAdminHomeBinding
@@ -34,6 +35,10 @@ class AdminHomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val userName = SharedPreferenceManager.getString(SharedPreferenceManager.USER_NAME)
+
+        binding.welcomeMessage.text = "Welcome $userName"
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
