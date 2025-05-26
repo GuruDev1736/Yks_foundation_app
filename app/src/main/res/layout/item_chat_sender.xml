@@ -1,0 +1,26 @@
+<!-- res/layout/item_chat_sender.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:gravity="end"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_sender"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:text="Sender message" />
+
+    <TextView
+        android:id="@+id/tvTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12:00 PM"
+        android:textSize="10sp"
+        android:textColor="#AAAAAA"
+        android:layout_marginTop="2dp"/>
+</LinearLayout>

@@ -115,5 +115,8 @@ interface ApiInterface {
     @POST("comment/create/{userId}/{postId}")
     fun createComment(@Path("userId") userId: Int, @Path("postId") postId: Int, @Body model: CreateCommentRequestModel): Call<CreateCommentResponseModel>
 
+    @POST("api/chat/send")
+    fun sendMessage(@Query("userId") userId : Int , @Query("societyId") societyId : Int , @Query("messageText") message : String ): Call<UniversalModel>
+
 }
 

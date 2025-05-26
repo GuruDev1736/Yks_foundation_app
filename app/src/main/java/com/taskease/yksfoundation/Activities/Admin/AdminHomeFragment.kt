@@ -1,5 +1,6 @@
 package com.taskease.yksfoundation.Activities.Admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.taskease.yksfoundation.Activities.Chat.ChattingActivity
 import com.taskease.yksfoundation.Adapter.PostAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
@@ -56,6 +58,10 @@ class AdminHomeFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        binding.chat.setOnClickListener {
+            startActivity(Intent(context,ChattingActivity::class.java))
+        }
 
     }
 

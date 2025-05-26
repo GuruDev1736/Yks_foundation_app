@@ -6,7 +6,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    val BASE_URL = "https://wscc.quick-hire.in/"
+//    val BASE_URL = "https://wscc.quick-hire.in/"
+    val BASE_URL = "http://192.168.0.105:8080/"
 
     val headerClient = OkHttpClient.Builder()
         .addInterceptor(HeaderInterceptor())
@@ -21,7 +22,6 @@ object RetrofitInstance {
             level = okhttp3.logging.HttpLoggingInterceptor.Level.BODY // Enable logging
         })
         .build()
-
 
 
     fun getHeaderInstance(): ApiInterface {
