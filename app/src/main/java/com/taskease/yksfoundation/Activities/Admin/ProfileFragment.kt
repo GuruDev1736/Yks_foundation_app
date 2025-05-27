@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.taskease.yksfoundation.Activities.Admin.PostApprovalActivity
+import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Activities.CreatePostActivity
 import com.taskease.yksfoundation.Activities.HomeActivity
 import com.taskease.yksfoundation.Adapter.PostAdapter
@@ -45,6 +46,11 @@ class ProfileFragment : Fragment() {
 
         getUserById(userId)
 
+        binding.logout.setOnClickListener {
+            SharedPreferenceManager.clearAll()
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            requireActivity().finish()
+        }
     }
 
     private fun getUserById(userId: Int) {

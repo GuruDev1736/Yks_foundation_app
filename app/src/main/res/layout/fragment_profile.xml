@@ -91,6 +91,16 @@
                 android:text="Create Post"/>
 
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary"
+            android:text="LogOut"/>
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
