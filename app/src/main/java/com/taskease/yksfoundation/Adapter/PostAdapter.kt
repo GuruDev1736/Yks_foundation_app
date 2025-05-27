@@ -1,7 +1,10 @@
 package com.taskease.yksfoundation.Adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,7 +62,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
     ) {
         val data = filteredList[position]
         holder.binding.apply {
-            Glide.with(context).load(data.user.profile_pic).into(imageProfile)
+            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic)).into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
             textCaption.text = data.title
@@ -404,7 +407,18 @@ class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.
     ) {
         val data = list[position]
         holder.binding.apply {
-            Glide.with(context).load(data).into(imgViewPager)
+            if (data.startsWith("data:image") || isBase64(data)) {
+                try {
+                    val imageBytes = Base64.decode(data.substringAfter(","), Base64.DEFAULT)
+                    val bitmap: Bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    Glide.with(context).load(bitmap).into(imgViewPager)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Glide.with(context).load(R.drawable.imagefalied).into(imgViewPager)
+                }
+            } else {
+                Glide.with(context).load(data).into(imgViewPager)
+            }
         }
     }
 
@@ -414,4 +428,13 @@ class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.
 
     class onViewHolder(val binding : ItemImageViewpagerBinding, itemView: View) : RecyclerView.ViewHolder(binding.root)
 
+    private fun isBase64(string: String): Boolean {
+        return try {
+            Base64.decode(string, Base64.DEFAULT)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+    }
 }
+

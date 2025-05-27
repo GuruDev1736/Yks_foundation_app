@@ -68,7 +68,7 @@ dependencies {
     implementation ("com.guolindev.permissionx:permissionx:1.8.1")
     implementation ("com.github.appsfeature:otp-view:1.1")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
-    implementation ("com.google.android.material:material:1.10.0")
+    implementation("com.cloudinary:cloudinary-android:3.0.2")
 
 
 }

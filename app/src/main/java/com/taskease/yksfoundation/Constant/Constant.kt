@@ -3,6 +3,8 @@ package com.taskease.yksfoundation.Constant
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -11,9 +13,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.datepicker.MaterialDatePicker
 import es.dmoral.toasty.Toasty
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.Base64
@@ -86,6 +90,36 @@ object Constant {
             Toast.makeText(context, "Excel saved to Downloads", Toast.LENGTH_SHORT).show()
         } ?: run {
             Toast.makeText(context, "Failed to create file", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun uriToBase64(context: Context, uri: Uri): String? {
+        return try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val outputStream = ByteArrayOutputStream()
+
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+
+            while (inputStream?.read(buffer).also { bytesRead = it ?: -1 } != -1) {
+                outputStream.write(buffer, 0, bytesRead)
+            }
+
+            val byteArray = outputStream.toByteArray()
+            android.util.Base64.encodeToString(byteArray, android.util.Base64.NO_WRAP)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun base64ToBitmap(base64Str: String): Bitmap? {
+        return try {
+            val decodedBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

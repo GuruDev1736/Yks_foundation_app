@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Activities.CreatePostActivity
 import com.taskease.yksfoundation.Adapter.MenuAdapter
@@ -21,8 +22,8 @@ class SuperAdminHomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySuperAdminHomeBinding
     private val menuList = listOf(
-        MenuItem("Add Post", R.drawable.post),
-        MenuItem("Add Society", R.drawable.society),
+        MenuItem("Add Post", R.drawable.image_selection),
+        MenuItem("Add Society", R.drawable.society_2),
         MenuItem("LogOut",R.drawable.logout)
     )
 
@@ -41,7 +42,7 @@ class SuperAdminHomeActivity : AppCompatActivity() {
             }
         }
 
-        binding.menuRecyclerView.layoutManager = GridLayoutManager(this, 2)
+        binding.menuRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.menuRecyclerView.adapter = adapter
     }
 

@@ -69,9 +69,9 @@ class ProfileFragment : Fragment() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-
-                                Glide.with(requireContext()).load(data.CONTENT.profile_pic).into(binding.profilePic)
-                                Glide.with(requireContext()).load(data.CONTENT.bannerUrl).into(binding.bannerURL)
+                                val profilePic = Constant.base64ToBitmap(data.CONTENT.profile_pic)
+                                Glide.with(requireContext()).load(profilePic).error(R.drawable.imagefalied).into(binding.profilePic)
+                                Glide.with(requireContext()).load(data.CONTENT.bannerUrl).error(R.drawable.imagefalied).into(binding.bannerURL)
                                 binding.name.text = data.CONTENT.fullName
                                 binding.description.text = data.CONTENT.email
 

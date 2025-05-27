@@ -23,7 +23,6 @@ class ChatAdapter(private val chatList: List<ChatMessage>, private val currentUs
     }
 
     inner class ReceiverViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvSenderRole: TextView = itemView.findViewById(R.id.tvSenderRole)
         val tvMessage: TextView = itemView.findViewById(R.id.tvMessage)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
     }
@@ -52,7 +51,6 @@ class ChatAdapter(private val chatList: List<ChatMessage>, private val currentUs
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
         } else if (holder is ReceiverViewHolder) {
-            holder.tvSenderRole.text = chat.senderName
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
         }

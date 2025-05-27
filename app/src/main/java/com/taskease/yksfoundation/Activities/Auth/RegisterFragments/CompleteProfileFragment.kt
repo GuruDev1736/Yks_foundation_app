@@ -3,18 +3,24 @@ package com.taskease.yksfoundation.Activities.Auth.RegisterFragments
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
+import com.cloudinary.android.MediaManager
+import com.cloudinary.android.callback.ErrorInfo
+import com.cloudinary.android.callback.UploadCallback
 import com.google.firebase.storage.FirebaseStorage
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Activities.Auth.RegisterActivity
@@ -34,62 +40,107 @@ import retrofit2.Response
 class CompleteProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentCompleteProfileBinding
-    private lateinit var storage: FirebaseStorage
-    private  var profileUrl: String? = null
+    private var profileUrl: String? = null
     private var cameraUri: Uri? = null
     private lateinit var viewModel: RegisterViewModel
 
     private val ImagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { UploadFile(it) }
+            uri?.let {
+                profileUrl = Constant.uriToBase64(requireContext(),it)
+                Glide.with(requireContext()).load(it).into(binding.profilePic)
+            }
         }
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && cameraUri != null) {
-                UploadFile(cameraUri!!)
+                profileUrl = Constant.uriToBase64(requireContext(),cameraUri!!)
+                Glide.with(requireContext()).load(cameraUri).into(binding.profilePic)
             }
         }
 
-    private fun UploadFile(uri: Uri) {
-        val progressDialog = CustomProgressDialog(requireContext())
-        progressDialog.show()
-        try {
-            storage.getReference("Yks/ProfilePic")
-                .child(System.currentTimeMillis().toString())
-                .putFile(uri)
-                .addOnSuccessListener { taskSnapshot ->
-                    taskSnapshot.storage.downloadUrl.addOnSuccessListener { downloadUri ->
-                        profileUrl = downloadUri.toString()
-                        Glide.with(requireContext()).load(profileUrl).into(binding.profilePic)
-                        progressDialog.dismiss()
-                    }.addOnFailureListener {
-                        progressDialog.dismiss()
-                        Constant.error(requireContext(), "Failed to get download URL")
-                    }
-                }.addOnFailureListener {
-                    progressDialog.dismiss()
-                    Constant.error(requireContext(), "Something went wrong during upload")
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            progressDialog.dismiss()
-            Constant.error(requireContext(), "An error occurred")
-        }
-    }
+
+//    private fun UploadFile(uri: Uri) {
+//        val progressDialog = CustomProgressDialog(requireContext())
+//        progressDialog.show()
+//
+//        MediaManager.get().upload(uri)
+//            .unsigned("taskease")
+//            .callback(object : UploadCallback {
+//                override fun onStart(requestId: String?) {
+//                    Log.d("Cloudinary", "Upload started")
+//                }
+//
+//                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
+//                    Log.d("Cloudinary", "Progress: $bytes / $totalBytes")
+//                }
+//
+//                override fun onSuccess(requestId: String?, resultData: MutableMap<*, *>) {
+//                    Log.d("Cloudinary", "Upload successful")
+//                    val url = resultData["url"] as? String
+//                    if (!url.isNullOrEmpty()) {
+//                        profileUrl = url
+//                        Glide.with(requireContext()).load(url).into(binding.profilePic)
+//                    } else {
+//                        Log.e("Cloudinary", "secure_url is null or missing")
+//                    }
+//                    progressDialog.dismiss()
+//                }
+//
+//                override fun onError(requestId: String?, error: ErrorInfo?) {
+//                    progressDialog.dismiss()
+//                    Log.e("Cloudinary", "Upload failed: ${error?.description}")
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Upload failed: ${error?.description}",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//
+//                override fun onReschedule(requestId: String?, error: ErrorInfo?) {
+//                    Log.e("Cloudinary", "Rescheduled: ${error?.description}")
+//                }
+//            }).dispatch()
+//    }
+
+
+//    private fun UploadFile(uri: Uri) {
+//        val progressDialog = CustomProgressDialog(requireContext())
+//        progressDialog.show()
+//        try {
+//            storage.getReference("Yks/ProfilePic")
+//                .child(System.currentTimeMillis().toString())
+//                .putFile(uri)
+//                .addOnSuccessListener { taskSnapshot ->
+//                    taskSnapshot.storage.downloadUrl.addOnSuccessListener { downloadUri ->
+//
+//                        Glide.with(requireContext()).load(profileUrl).into(binding.profilePic)
+//                        progressDialog.dismiss()
+//                    }.addOnFailureListener {
+//                        progressDialog.dismiss()
+//                        Constant.error(requireContext(), "Failed to get download URL")
+//                    }
+//                }.addOnFailureListener {
+//                    progressDialog.dismiss()
+//                    Constant.error(requireContext(), "Something went wrong during upload")
+//                }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            progressDialog.dismiss()
+//            Constant.error(requireContext(), "An error occurred")
+//        }
+//    }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentCompleteProfileBinding.inflate(inflater,container,false)
+        binding = FragmentCompleteProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        storage = FirebaseStorage.getInstance()
 
         viewModel = ViewModelProvider(requireActivity())[RegisterViewModel::class.java]
 
@@ -103,8 +154,7 @@ class CompleteProfileFragment : Fragment() {
         }
 
         binding.register.setOnClickListener {
-            if (valid())
-            {
+            if (valid()) {
                 viewModel.profilePic(profileUrl.toString())
                 callRegisterApi()
             }
@@ -117,66 +167,80 @@ class CompleteProfileFragment : Fragment() {
 
         try {
             val data = viewModel.signupData.value
-            if (data!=null)
-            {
+            if (data != null) {
                 val model = UserRegisterRequestModel(
                     data.address.toString(),
                     data.anniversaryDate.toString(),
-                    data.dateOfBirth.toString(), data.designation.toString(), data.email.toString(),
-                    data.facebookLink.toString(), data.fullName.toString(), data.gender.toString(),
+                    data.dateOfBirth.toString(),
+                    data.designation.toString(),
+                    data.email.toString(),
+                    data.facebookLink.toString(),
+                    data.fullName.toString(),
+                    data.gender.toString(),
                     data.instagramLink.toString(),
                     data.linkedinLink.toString(),
                     data.member,
                     data.password.toString(),
                     data.phoneNo.toString(),
                     data.profilePic.toString(),
-                    data.snapchatLink.toString(), data.twitterLink.toString(),data.voter, data.whatsappNo.toString()
+                    data.snapchatLink.toString(),
+                    data.twitterLink.toString(),
+                    data.voter,
+                    data.whatsappNo.toString()
                 )
 
-                RetrofitInstance.getInstance().registerUser(data.societyId,model).enqueue(object :
-                    Callback<UserRegisterResponseModel> {
-                    override fun onResponse(
-                        call: Call<UserRegisterResponseModel>,
-                        response: Response<UserRegisterResponseModel>
-                    ) {
-                        progress.dismiss()
+                RetrofitInstance.getInstance().registerUser(data.societyId, model)
+                    .enqueue(object : Callback<UserRegisterResponseModel> {
+                        override fun onResponse(
+                            call: Call<UserRegisterResponseModel>,
+                            response: Response<UserRegisterResponseModel>
+                        ) {
+                            progress.dismiss()
 
-                        if (response.isSuccessful) {
-                            val data = response.body()
-                            if (data != null) {
-                                if (data.STS == "200") {
-                                    Constant.success(requireContext(), data.MSG)
-                                    startActivity(Intent(requireContext(), LoginActivity::class.java))
-                                    requireActivity().finish()
+                            if (response.isSuccessful) {
+                                val data = response.body()
+                                if (data != null) {
+                                    if (data.STS == "200") {
+                                        Constant.success(requireContext(), data.MSG)
+                                        startActivity(
+                                            Intent(
+                                                requireContext(), LoginActivity::class.java
+                                            )
+                                        )
+                                        requireActivity().finish()
+                                    } else {
+                                        Constant.error(requireContext(), data.MSG)
+                                    }
                                 } else {
-                                    Constant.error(requireContext(), data.MSG)
+                                    Constant.error(requireContext(), "No data received")
                                 }
                             } else {
-                                Constant.error(requireContext(), "No data received")
+                                Constant.error(requireContext(), "Response unsuccessful")
+                                Log.e(
+                                    "SelectSocietyFragment",
+                                    "Error response code: ${response.code()}"
+                                )
                             }
-                        } else {
-                            Constant.error(requireContext(), "Response unsuccessful")
-                            Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                         }
-                    }
 
-                    override fun onFailure(call: Call<UserRegisterResponseModel>, t: Throwable) {
-                        progress.dismiss()
-                        Constant.error(requireContext(), "Something went wrong: ${t.message}")
-                        Log.e("SelectSocietyFragment", "API call failed", t)
-                    }
-                })
+                        override fun onFailure(
+                            call: Call<UserRegisterResponseModel>,
+                            t: Throwable
+                        ) {
+                            progress.dismiss()
+                            Constant.error(requireContext(), "Something went wrong: ${t.message}")
+                            Log.e("SelectSocietyFragment", "API call failed", t)
+                        }
+                    })
             }
-        }catch (e : Exception)
-        {
+        } catch (e: Exception) {
             e.printStackTrace()
             progress.dismiss()
         }
     }
 
-    private fun valid() : Boolean{
-        if (profileUrl == null)
-        {
+    private fun valid(): Boolean {
+        if (profileUrl == null) {
             Constant.error(requireContext(), "Please select a profile picture")
             return false
         }
@@ -215,7 +279,9 @@ class CompleteProfileFragment : Fragment() {
             put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         }
-        cameraUri = requireContext().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        cameraUri = requireContext().contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        )
         cameraUri?.let { cameraLauncher.launch(it) }
     }
 }
