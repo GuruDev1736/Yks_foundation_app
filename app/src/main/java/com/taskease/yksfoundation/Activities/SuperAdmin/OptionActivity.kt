@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.taskease.yksfoundation.Activities.Chat.ChattingActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Model.MenuItem
@@ -51,7 +52,8 @@ class OptionActivity : AppCompatActivity() {
                     .putExtra("id",societyId))
                 "Add User" -> startActivity(Intent(this@OptionActivity,
                     AddUserActivity::class.java).putExtra("id",societyId))
-                "See Chats" -> Toast.makeText(this, "Add Post clicked", Toast.LENGTH_SHORT).show()
+                "See Chats" -> startActivity(Intent(this@OptionActivity, ChattingActivity::class.java)
+                    .putExtra("societyId",societyId))
                 "Download Excel Sheet" -> exportUserData(societyId)
             }
         }

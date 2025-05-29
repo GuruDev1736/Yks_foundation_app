@@ -29,7 +29,7 @@ import retrofit2.Response
 
 class ChattingActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityChattingBinding
+    private lateinit var binding: ActivityChattingBinding
     private val chatMessages = ArrayList<ChatMessage>()
     private lateinit var chatAdapter: ChatAdapter
 
@@ -49,56 +49,73 @@ class ChattingActivity : AppCompatActivity() {
         chatAdapter = ChatAdapter(chatMessages, userId.toString()) // Replace with dynamic ID
         binding.chatRecyclerView.adapter = chatAdapter
 
-        fetchChatMessages()
+        val role = SharedPreferenceManager.getString(SharedPreferenceManager.ROLE)
 
-        binding.send.setOnClickListener {
-            val message = binding.message.text.toString()
-            if (message.isNotEmpty()) {
-                callSendMessageApi(message)
+        if (role.equals("ROLE_USER", ignoreCase = true) || role.equals(
+                "ROLE_ADMIN",
+                ignoreCase = true
+            )
+        ) {
+            val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
+            fetchChatMessages(societyId)
+            binding.send.setOnClickListener {
+                val message = binding.message.text.toString()
+                if (message.isNotEmpty()) {
+                    callSendMessageApi(message, userId, societyId)
+                }
+            }
+        } else if (role.equals("ROLE_SUPER_ADMIN")) {
+            val societyId = intent.getIntExtra("societyId", 0)
+            fetchChatMessages(societyId)
+            binding.send.setOnClickListener {
+                val message = binding.message.text.toString()
+                if (message.isNotEmpty()) {
+                    callSendMessageApi(message, userId, societyId)
+                }
             }
         }
-
     }
 
-    private fun callSendMessageApi(message: String) {
+    private fun callSendMessageApi(message: String, userId: Int, societyId: Int) {
         val progress = CustomProgressDialog(this)
         progress.show()
 
-        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
-        val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
-
         try {
-            RetrofitInstance.getHeaderInstance().sendMessage(userId,societyId,message).enqueue(object :
-                Callback<UniversalModel> {
-                override fun onResponse(
-                    call: retrofit2.Call<UniversalModel>,
-                    response: Response<UniversalModel>
-                ) {
-                    progress.dismiss()
-                    if (response.isSuccessful) {
-                        val data = response.body()
-                        if (data != null) {
-                            if (data.STS == "200") {
-                                Constant.success(this@ChattingActivity, data.MSG)
-                                binding.message.setText("")
+            RetrofitInstance.getHeaderInstance().sendMessage(userId, societyId, message)
+                .enqueue(object :
+                    Callback<UniversalModel> {
+                    override fun onResponse(
+                        call: retrofit2.Call<UniversalModel>,
+                        response: Response<UniversalModel>
+                    ) {
+                        progress.dismiss()
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            if (data != null) {
+                                if (data.STS == "200") {
+                                    Constant.success(this@ChattingActivity, data.MSG)
+                                    binding.message.setText("")
+                                } else {
+                                    Constant.error(this@ChattingActivity, data.MSG)
+                                }
                             } else {
-                                Constant.error(this@ChattingActivity, data.MSG)
+                                Constant.error(this@ChattingActivity, "No data received")
                             }
                         } else {
-                            Constant.error(this@ChattingActivity, "No data received")
+                            Constant.error(this@ChattingActivity, "Response unsuccessful")
+                            Log.e(
+                                "SelectSocietyFragment",
+                                "Error response code: ${response.code()}"
+                            )
                         }
-                    } else {
-                        Constant.error(this@ChattingActivity, "Response unsuccessful")
-                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                     }
-                }
 
-                override fun onFailure(call: retrofit2.Call<UniversalModel>, t: Throwable) {
-                    progress.dismiss()
-                    Constant.error(this@ChattingActivity, "Something went wrong: ${t.message}")
-                    Log.e("SelectSocietyFragment", "API call failed", t)
-                }
-            })
+                    override fun onFailure(call: retrofit2.Call<UniversalModel>, t: Throwable) {
+                        progress.dismiss()
+                        Constant.error(this@ChattingActivity, "Something went wrong: ${t.message}")
+                        Log.e("SelectSocietyFragment", "API call failed", t)
+                    }
+                })
         } catch (e: Exception) {
             progress.dismiss()
             Constant.error(this@ChattingActivity, "Exception: ${e.message}")
@@ -106,9 +123,8 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchChatMessages() {
+    private fun fetchChatMessages(societyId: Int) {
 
-        val societyId = SharedPreferenceManager.getInt(SharedPreferenceManager.SOCIETY_ID)
         val databaseRef = FirebaseDatabase.getInstance().getReference("chats/$societyId/messages")
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -123,7 +139,8 @@ class ChattingActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ChattingActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ChattingActivity, "Error: ${error.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }
