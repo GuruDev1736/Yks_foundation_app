@@ -82,10 +82,13 @@ class AdminHomeFragment : Fragment() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-                                adapter = PostAdapter(requireContext(),data.CONTENT){
-                                    getAllPost()
+                                if (isAdded)
+                                {
+                                    adapter = PostAdapter(requireContext(),data.CONTENT){
+                                        getAllPost()
+                                    }
+                                    binding.recyclerView.adapter = adapter
                                 }
-                                binding.recyclerView.adapter = adapter
                             } else {
                                 Constant.error(requireContext(), data.MSG)
                             }

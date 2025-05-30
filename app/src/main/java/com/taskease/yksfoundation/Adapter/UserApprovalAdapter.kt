@@ -14,6 +14,7 @@ import com.taskease.yksfoundation.Model.ResponseModel.CommentPost
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllUserDisabledResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.User
 import com.taskease.yksfoundation.Model.UniversalModel
+import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.CommentLayoutBinding
 import com.taskease.yksfoundation.databinding.UserApprovalLayoutBinding
@@ -35,7 +36,8 @@ class UserApprovalAdapter(val context: Context, val list: List<User> , val liste
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = list[position]
         holder.binding.apply {
-            Glide.with(context).load(data.profile_pic).into(profilePic)
+            val profilePicture = Constant.base64ToBitmap(data.profile_pic)
+            Glide.with(context).load(profilePicture).placeholder(R.drawable.imagefalied).into(profilePic)
             name.text = data.fullName
             email.text = data.email
             phone.text = data.phoneNo

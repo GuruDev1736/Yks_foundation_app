@@ -1,5 +1,6 @@
 package com.taskease.yksfoundation.Activities
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -26,8 +27,10 @@ import com.taskease.yksfoundation.Model.ResponseModel.CreatePostResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.ActivityCreatePostBinding
+import com.yalantis.ucrop.UCrop
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 class CreatePostActivity : AppCompatActivity() {
 
@@ -39,21 +42,62 @@ class CreatePostActivity : AppCompatActivity() {
     private val imageUris = mutableListOf<Uri>()
     private val uploadedUrls = mutableListOf<String>()
 
+    private val tempUrisForCropping = mutableListOf<Uri>()
+    private var currentCroppingIndex = 0
 
-    private val launcher =
-        registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
-            imageUris.clear()
-            if (uris != null) {
-                binding.postImages.visibility = View.GONE
-                binding.ViewpagerLayout.visibility = View.VISIBLE
-                imageUris.addAll(uris)
+
+
+    private val launcher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        if (!uris.isNullOrEmpty()) {
+            tempUrisForCropping.clear()
+            tempUrisForCropping.addAll(uris)
+            currentCroppingIndex = 0
+            startCrop(tempUrisForCropping[currentCroppingIndex])
+        }
+    }
+
+
+    private fun startCrop(sourceUri: Uri) {
+        val destinationFileName = "cropped_${System.currentTimeMillis()}.jpg"
+        val destinationUri = Uri.fromFile(File(cacheDir, destinationFileName))
+
+        val options = UCrop.Options().apply {
+            setCompressionFormat(Bitmap.CompressFormat.JPEG)
+            setCompressionQuality(70) // Adjust quality if needed
+            setHideBottomControls(true) // Hides freestyle controls
+            setFreeStyleCropEnabled(false)
+        }
+
+        val uCrop = UCrop.of(sourceUri, destinationUri)
+            .withOptions(options)
+            .withAspectRatio(1f, 1f)
+
+        cropImageLauncher.launch(uCrop.getIntent(this))
+    }
+
+
+    private val cropImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val resultUri = UCrop.getOutput(result.data!!)
+            resultUri?.let {
+                imageUris.add(it)
                 imageAdapter.notifyDataSetChanged()
                 setupDots()
-            } else {
-                binding.postImages.visibility = View.VISIBLE
-                binding.ViewpagerLayout.visibility = View.GONE
             }
+
+            currentCroppingIndex++
+            if (currentCroppingIndex < tempUrisForCropping.size) {
+                startCrop(tempUrisForCropping[currentCroppingIndex])
+            } else {
+                binding.postImages.visibility = View.GONE
+                binding.ViewpagerLayout.visibility = View.VISIBLE
+            }
+        } else if (result.resultCode == UCrop.RESULT_ERROR) {
+            val error = UCrop.getError(result.data!!)
+            Toast.makeText(this, "Crop error: ${error?.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -280,7 +324,7 @@ class ImagePagerAdapter(private val imageUris: List<Uri>) :
     RecyclerView.Adapter<ImagePagerAdapter.ImageViewHolder>() {
 
     inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val image: ImageView = view.findViewById(R.id.imgViewPager)
+        val image: ImageView = view.findViewById(R.id.imageView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {

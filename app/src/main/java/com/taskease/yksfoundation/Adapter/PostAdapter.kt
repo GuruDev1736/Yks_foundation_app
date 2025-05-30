@@ -411,13 +411,13 @@ class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.
                 try {
                     val imageBytes = Base64.decode(data.substringAfter(","), Base64.DEFAULT)
                     val bitmap: Bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    Glide.with(context).load(bitmap).into(imgViewPager)
+                    Glide.with(context).load(bitmap).into(imageView)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Glide.with(context).load(R.drawable.imagefalied).into(imgViewPager)
+                    Glide.with(context).load(R.drawable.imagefalied).into(imageView)
                 }
             } else {
-                Glide.with(context).load(data).into(imgViewPager)
+                Glide.with(context).load(data).into(imageView)
             }
         }
     }

@@ -46,7 +46,8 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost> , val
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = list[position]
         holder.binding.apply {
-            Glide.with(context).load(data.user.profile_pic).placeholder(R.drawable.imagefalied).into(imageProfile)
+            val profilePic = Constant.base64ToBitmap(data.user.profile_pic)
+            Glide.with(context).load(profilePic).placeholder(R.drawable.imagefalied).into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
             textCaption.text = data.title

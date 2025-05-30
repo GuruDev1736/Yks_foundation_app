@@ -55,8 +55,7 @@
             android:id="@+id/image_post"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop" />
+            android:layout_marginTop="8dp" />
 
         <!-- Icons -->
         <LinearLayout
@@ -94,7 +93,7 @@
                 android:id="@+id/icon_save"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_save" />
+                android:src="@drawable/save" />
         </LinearLayout>
 
         <!-- Likes -->

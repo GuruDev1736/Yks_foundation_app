@@ -95,16 +95,9 @@ object Constant {
 
     fun uriToBase64(context: Context, uri: Uri): String? {
         return try {
-            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             val outputStream = ByteArrayOutputStream()
-
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-
-            while (inputStream?.read(buffer).also { bytesRead = it ?: -1 } != -1) {
-                outputStream.write(buffer, 0, bytesRead)
-            }
-
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
             val byteArray = outputStream.toByteArray()
             android.util.Base64.encodeToString(byteArray, android.util.Base64.NO_WRAP)
         } catch (e: Exception) {
