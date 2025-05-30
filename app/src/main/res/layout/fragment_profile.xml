@@ -102,13 +102,13 @@
 
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/createPost"
+                    android:id="@+id/save"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/primary"
-                    android:text="Create Post"
+                    android:text="Saved"
                     android:textColor="@color/white" />
 
             </LinearLayout>

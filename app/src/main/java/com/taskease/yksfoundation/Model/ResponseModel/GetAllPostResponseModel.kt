@@ -14,6 +14,7 @@ data class GetAllPost(
     val imageUrls: List<String>,
     val likeCount: Int,
     val likedBy: List<Int>,
+    val savedBy: List<Int>,
     val postImage: String,
     val superAdmin: Boolean,
     val title: String,

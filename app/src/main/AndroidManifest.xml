@@ -26,6 +26,9 @@
         android:theme="@style/Theme.YksFoundation"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.SavePostActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.Chat.ChattingActivity"
             android:exported="false" />
         <activity
@@ -74,12 +77,10 @@
         <activity
             android:name=".Activities.Auth.LoginActivity"
             android:exported="false" />
-
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

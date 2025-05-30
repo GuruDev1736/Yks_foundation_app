@@ -79,6 +79,9 @@ interface ApiInterface {
     @POST("likes/like/{userId}/{postId}")
     fun likePost(@Path("userId") userId: Int, @Path("postId") postId: Int): Call<UniversalModel>
 
+    @POST("likes/unlike/{userId}/{postId}")
+    fun unlikePost(@Path("userId") userId: Int, @Path("postId") postId: Int): Call<UniversalModel>
+
     @GET("likes/users/{postId}")
     fun getLikedUsers(@Path("postId") postId: Int?): Call<GetUserByPostResponseModel>
 
@@ -118,5 +121,7 @@ interface ApiInterface {
     @POST("api/chat/send")
     fun sendMessage(@Query("userId") userId : Int , @Query("societyId") societyId : Int , @Query("messageText") message : String ): Call<UniversalModel>
 
+    @POST("saved/post")
+    fun savePost(@Query("userId") userId : Int , @Query("postId") postId : Int) : Call<UniversalModel>
 }
 

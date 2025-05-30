@@ -1,24 +1,34 @@
 package com.taskease.yksfoundation.Adapter
 
+import android.animation.Animator
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Base64
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.EditText
 import android.widget.Filter
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.taskease.yksfoundation.Constant.Constant
@@ -42,8 +52,10 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import javax.microedition.khronos.opengles.GL
 
-class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLikeSuccess: () -> Unit) : RecyclerView.Adapter<PostAdapter.onViewHolder>() {
+class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSuccess: () -> Unit) :
+    RecyclerView.Adapter<PostAdapter.onViewHolder>() {
 
     private var filteredList: List<GetAllPost> = list
 
@@ -51,7 +63,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         parent: ViewGroup,
         viewType: Int
     ): onViewHolder {
-        val view = PostLayoutBinding.inflate(LayoutInflater.from(context),parent,false)
+        val view = PostLayoutBinding.inflate(LayoutInflater.from(context), parent, false)
         return onViewHolder(view)
     }
 
@@ -62,28 +74,42 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
     ) {
         val data = filteredList[position]
         holder.binding.apply {
-            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic)).into(imageProfile)
+            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic))
+                .into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
             textCaption.text = data.title
-            imagePost.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-            imagePost.adapter = ImageAdapter(context,data.imageUrls)
+            imagePost.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            imagePost.adapter = ImageAdapter(context, data.imageUrls)
 
             val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
             if (data.likedBy.contains(userId)) {
                 iconLike.setImageResource(R.drawable.ic_heart)
-                iconLike.isEnabled = false
             } else {
                 iconLike.setImageResource(R.drawable.ic_heart_outline)
-                iconLike.isEnabled = true
+            }
+
+            if (data.savedBy.contains(userId)) {
+                iconSave.setImageResource(R.drawable.savedfilled)
+            } else {
+                iconLike.setImageResource(R.drawable.save)
+                iconSave.setOnClickListener {
+                    callSaveApi(data.id)
+                }
             }
 
             val timestamp = getRelativeTime(data.createdDate)
             textTime.text = timestamp
 
             iconLike.setOnClickListener {
-                callLikeAPI(data.id)
+                val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+                if (data.likedBy.contains(userId)) {
+                    callUnlikeAPI(data.id, onLikeSuccess)
+                } else {
+                    callLikeAPI(data.id)
+                }
             }
 
             textLikes.text = "${data.likeCount} Likes"
@@ -95,8 +121,77 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
             iconComment.setOnClickListener {
                 callCommentBottomSheet(data.id)
             }
+
+            val gestureDetector = GestureDetector(
+                holder.itemView.context,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDoubleTap(e: MotionEvent): Boolean {
+                        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+
+                        val isCurrentlyLiked = data.likedBy.contains(userId)
+
+                        lottieView.visibility = View.VISIBLE
+                        lottieView.playAnimation()
+                        lottieView.addAnimatorListener(object : Animator.AnimatorListener {
+                            override fun onAnimationStart(animation: Animator) {
+
+                            }
+
+                            override fun onAnimationEnd(animation: Animator) {
+                                lottieView.visibility = View.GONE
+                            }
+
+                            override fun onAnimationCancel(animation: Animator) {
+                                TODO("Not yet implemented")
+                            }
+
+                            override fun onAnimationRepeat(animation: Animator) {
+                                TODO("Not yet implemented")
+                            }
+                        })
+
+                        if (isCurrentlyLiked) {
+                            callUnlikeAPI(data.id, onLikeSuccess)
+                        } else {
+                            callLikeAPI(data.id)
+                        }
+
+                        return true
+                    }
+                })
+
+            wholeLayout.setOnTouchListener { _, event ->
+                gestureDetector.onTouchEvent(event)
+                true
+            }
+
+            profileRow.setOnClickListener {
+                showUserDialog(context, data.user.fullName, data.user.designation, data.user.profile_pic,data.user.gender,data.user.address)
+            }
         }
     }
+
+    fun showUserDialog(context: Context, name: String, designation: String, imageResId: String , gender : String , location : String) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_user_profile, null)
+
+        val imageView = dialogView.findViewById<ImageView>(R.id.imageViewProfile)
+        val nameText = dialogView.findViewById<TextView>(R.id.textViewName)
+        val designationText = dialogView.findViewById<TextView>(R.id.textViewDesignation)
+        val genderUser = dialogView.findViewById<TextView>(R.id.gender)
+        val locationUser= dialogView.findViewById<TextView>(R.id.location)
+
+        Glide.with(context).load(Constant.base64ToBitmap(imageResId)).error(R.drawable.imagefalied).into(imageView)
+        nameText.text = name
+        designationText.text = designation
+        genderUser.text = gender
+        locationUser.text = location
+
+        AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(true)
+            .show()
+    }
+
 
     private fun callLikeBottomSheet(postId: Int) {
         val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
@@ -109,7 +204,8 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
 
         bottomSheetDialog.setContentView(view)
 
-        val bottomSheet = bottomSheetDialog.delegate.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val bottomSheet =
+            bottomSheetDialog.delegate.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         bottomSheet?.let {
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -134,7 +230,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
                     if (response.isSuccessful) {
                         val data = response.body()
                         if (data != null && data.STS == "200") {
-                            val adapter = LikeAdapter(context,data.CONTENT)
+                            val adapter = LikeAdapter(context, data.CONTENT)
                             recyclerView.adapter = adapter
                         } else {
                             Constant.error(context, data?.MSG ?: "No message")
@@ -167,13 +263,10 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
 
         send.setOnClickListener {
             val comment = comment.text.toString()
-            if (comment.isEmpty())
-            {
-                Constant.error(context,"Please enter a comment")
-            }
-            else
-            {
-                sendComment(postId,comment,bottomSheetDialog)
+            if (comment.isEmpty()) {
+                Constant.error(context, "Please enter a comment")
+            } else {
+                sendComment(postId, comment, bottomSheetDialog)
             }
         }
 
@@ -182,7 +275,8 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
 
         bottomSheetDialog.setContentView(view)
 
-        val bottomSheet = bottomSheetDialog.delegate.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val bottomSheet =
+            bottomSheetDialog.delegate.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         bottomSheet?.let {
             val behavior = BottomSheetBehavior.from(it)
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -192,12 +286,11 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         }
 
         bottomSheetDialog.show()
-        callGetCommentPost(postId , recyclerView)
+        callGetCommentPost(postId, recyclerView)
     }
 
 
-    private fun callGetCommentPost(postId: Int , recyclerView : RecyclerView)
-    {
+    private fun callGetCommentPost(postId: Int, recyclerView: RecyclerView) {
         val progress = CustomProgressDialog(context)
         progress.show()
 
@@ -212,7 +305,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
                     if (response.isSuccessful) {
                         val data = response.body()
                         if (data != null && data.STS == "200") {
-                            val adapter = CommentAdapter(context,data.CONTENT)
+                            val adapter = CommentAdapter(context, data.CONTENT)
                             recyclerView.adapter = adapter
                         } else {
                             Constant.error(context, data?.MSG ?: "No message")
@@ -234,8 +327,7 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         }
     }
 
-    private fun sendComment(postId: Int , comment : String , bottomDialogSheet : BottomSheetDialog)
-    {
+    private fun sendComment(postId: Int, comment: String, bottomDialogSheet: BottomSheetDialog) {
         val progress = CustomProgressDialog(context)
         progress.show()
 
@@ -244,37 +336,44 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         val model = CreateCommentRequestModel(comment)
 
         try {
-            RetrofitInstance.getHeaderInstance().createComment(userId,postId,model).enqueue(object :
-                Callback<CreateCommentResponseModel> {
-                override fun onResponse(
-                    call: retrofit2.Call<CreateCommentResponseModel>,
-                    response: Response<CreateCommentResponseModel>
-                ) {
-                    progress.dismiss()
-                    if (response.isSuccessful) {
-                        val data = response.body()
-                        if (data != null) {
-                            if (data.STS == "200") {
-                                Constant.success(context, data.MSG)
-                                bottomDialogSheet.dismiss()
+            RetrofitInstance.getHeaderInstance().createComment(userId, postId, model)
+                .enqueue(object :
+                    Callback<CreateCommentResponseModel> {
+                    override fun onResponse(
+                        call: retrofit2.Call<CreateCommentResponseModel>,
+                        response: Response<CreateCommentResponseModel>
+                    ) {
+                        progress.dismiss()
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            if (data != null) {
+                                if (data.STS == "200") {
+                                    Constant.success(context, data.MSG)
+                                    bottomDialogSheet.dismiss()
+                                } else {
+                                    Constant.error(context, data.MSG)
+                                }
                             } else {
-                                Constant.error(context, data.MSG)
+                                Constant.error(context, "No data received")
                             }
                         } else {
-                            Constant.error(context, "No data received")
+                            Constant.error(context, "Response unsuccessful")
+                            Log.e(
+                                "SelectSocietyFragment",
+                                "Error response code: ${response.code()}"
+                            )
                         }
-                    } else {
-                        Constant.error(context, "Response unsuccessful")
-                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
                     }
-                }
 
-                override fun onFailure(call: retrofit2.Call<CreateCommentResponseModel>, t: Throwable) {
-                    progress.dismiss()
-                    Constant.error(context, "Something went wrong: ${t.message}")
-                    Log.e("SelectSocietyFragment", "API call failed", t)
-                }
-            })
+                    override fun onFailure(
+                        call: retrofit2.Call<CreateCommentResponseModel>,
+                        t: Throwable
+                    ) {
+                        progress.dismiss()
+                        Constant.error(context, "Something went wrong: ${t.message}")
+                        Log.e("SelectSocietyFragment", "API call failed", t)
+                    }
+                })
         } catch (e: Exception) {
             progress.dismiss()
             Constant.error(context, "Exception: ${e.message}")
@@ -312,15 +411,14 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         }
     }
 
-    private fun callLikeAPI(id : Int)
-    {
+    private fun callLikeAPI(id: Int) {
         val progress = CustomProgressDialog(context)
         progress.show()
 
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
         try {
-            RetrofitInstance.getHeaderInstance().likePost(userId,id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().likePost(userId, id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: retrofit2.Call<UniversalModel>,
@@ -358,6 +456,91 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
         }
     }
 
+    private fun callUnlikeAPI(postId: Int, onUnlikeSuccess: () -> Unit) {
+        val progress = CustomProgressDialog(context)
+        progress.show()
+
+        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+
+        try {
+            RetrofitInstance.getHeaderInstance().unlikePost(userId, postId)
+                .enqueue(object : Callback<UniversalModel> {
+                    override fun onResponse(
+                        call: Call<UniversalModel>,
+                        response: Response<UniversalModel>
+                    ) {
+                        progress.dismiss()
+                        if (response.isSuccessful) {
+                            val data = response.body()
+                            if (data != null && data.STS == "200") {
+                                Constant.success(context, data.MSG)
+                                onUnlikeSuccess.invoke()
+                            } else {
+                                Constant.error(context, data?.MSG ?: "Error")
+                            }
+                        } else {
+                            Constant.error(context, "Response unsuccessful")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
+                        progress.dismiss()
+                        Constant.error(context, "Something went wrong: ${t.message}")
+                    }
+                })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(context, "Exception: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    private fun callSaveApi(id: Int) {
+        val progress = CustomProgressDialog(context)
+        progress.show()
+
+        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+
+        try {
+            RetrofitInstance.getHeaderInstance().savePost(userId,id).enqueue(object :
+                Callback<UniversalModel> {
+                override fun onResponse(
+                    call: Call<UniversalModel>,
+                    response: Response<UniversalModel>
+                ) {
+                    progress.dismiss()
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        if (data != null) {
+                            if (data.STS == "200") {
+                                Constant.success(context, data.MSG)
+                                onLikeSuccess.invoke()
+                            } else {
+                                Constant.error(context, data.MSG)
+                            }
+                        } else {
+                            Constant.error(context, "No data received")
+                        }
+                    } else {
+                        Constant.error(context, "Response unsuccessful")
+                        Log.e("SelectSocietyFragment", "Error response code: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
+                    progress.dismiss()
+                    Constant.error(context, "Something went wrong: ${t.message}")
+                    Log.e("SelectSocietyFragment", "API call failed", t)
+                }
+            })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(context, "Exception: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+
     override fun getItemCount(): Int {
         return filteredList.size
     }
@@ -387,18 +570,18 @@ class PostAdapter(val context: Context , val list : List<GetAllPost> , val onLik
     }
 
 
-    class onViewHolder(val binding : PostLayoutBinding) : RecyclerView.ViewHolder(binding.root)
+    class onViewHolder(val binding: PostLayoutBinding) : RecyclerView.ViewHolder(binding.root)
 }
 
 
-
-class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.Adapter<ImageAdapter.onViewHolder>(){
+class ImageAdapter(val context: Context, val list: List<String>) :
+    RecyclerView.Adapter<ImageAdapter.onViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): onViewHolder {
-        val view = ItemImageViewpagerBinding.inflate(LayoutInflater.from(context),parent,false)
-        return onViewHolder(view,view.root)
+        val view = ItemImageViewpagerBinding.inflate(LayoutInflater.from(context), parent, false)
+        return onViewHolder(view, view.root)
     }
 
     override fun onBindViewHolder(
@@ -410,7 +593,8 @@ class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.
             if (data.startsWith("data:image") || isBase64(data)) {
                 try {
                     val imageBytes = Base64.decode(data.substringAfter(","), Base64.DEFAULT)
-                    val bitmap: Bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    val bitmap: Bitmap =
+                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                     Glide.with(context).load(bitmap).into(imageView)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -419,14 +603,40 @@ class ImageAdapter(val context: Context,val list : List<String>) : RecyclerView.
             } else {
                 Glide.with(context).load(data).into(imageView)
             }
+
+            imageView.setOnClickListener {
+                showZoomableImageDialog(context,data)
+            }
         }
     }
+
+    private fun showZoomableImageDialog(context: Context, imageUrl: String) {
+        val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_full_image)
+
+        val imageView = dialog.findViewById<PhotoView>(R.id.fullImageView)
+        val closeBtn = dialog.findViewById<ImageView>(R.id.closeButton)
+
+        // Use Glide or Picasso to load the image
+        Glide.with(context)
+            .load(Constant.base64ToBitmap(imageUrl))
+            .into(imageView)
+
+        closeBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
 
     override fun getItemCount(): Int {
         return list.size
     }
 
-    class onViewHolder(val binding : ItemImageViewpagerBinding, itemView: View) : RecyclerView.ViewHolder(binding.root)
+    class onViewHolder(val binding: ItemImageViewpagerBinding, itemView: View) :
+        RecyclerView.ViewHolder(binding.root)
 
     private fun isBase64(string: String): Boolean {
         return try {

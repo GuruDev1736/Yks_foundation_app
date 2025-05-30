@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.firebase.database)
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,6 +71,7 @@ dependencies {
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.github.yalantis:ucrop:2.2.8")
     implementation("com.cloudinary:cloudinary-android:3.0.2")
-
+    implementation ("com.airbnb.android:lottie:6.1.0")
+    implementation ("com.github.chrisbanes:PhotoView:2.3.0")
 
 }

@@ -13,6 +13,7 @@ import com.taskease.yksfoundation.Activities.Admin.PostApprovalActivity
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Activities.CreatePostActivity
 import com.taskease.yksfoundation.Activities.HomeActivity
+import com.taskease.yksfoundation.Activities.SavePostActivity
 import com.taskease.yksfoundation.Adapter.PostAdapter
 import com.taskease.yksfoundation.Adapter.PostApprovalAdapter
 import com.taskease.yksfoundation.Constant.Constant
@@ -75,8 +76,8 @@ class ProfileFragment : Fragment() {
                                 binding.name.text = data.CONTENT.fullName
                                 binding.description.text = data.CONTENT.email
 
-                                binding.createPost.setOnClickListener {
-                                    startActivity(Intent(requireContext(), CreatePostActivity::class.java).putExtra("isSuperAdmin",false))
+                                binding.save.setOnClickListener {
+                                    startActivity(Intent(context, SavePostActivity::class.java))
                                 }
 
                                  binding.editProfile.setOnClickListener {

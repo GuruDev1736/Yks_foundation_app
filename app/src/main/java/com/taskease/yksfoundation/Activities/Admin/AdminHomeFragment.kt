@@ -2,6 +2,8 @@ package com.taskease.yksfoundation.Activities.Admin
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -16,6 +18,7 @@ import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
+import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.FragmentAdminHomeBinding
 import retrofit2.Callback
@@ -61,6 +64,20 @@ class AdminHomeFragment : Fragment() {
 
         binding.chat.setOnClickListener {
             startActivity(Intent(context,ChattingActivity::class.java))
+        }
+
+        binding.welcomeMessage.setOnClickListener {
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, ProfileFragment())
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            Handler(Looper.getMainLooper()).postDelayed({
+                getAllPost()
+                binding.swipeRefreshLayout.isRefreshing = false
+            }, 2000)
         }
 
     }
