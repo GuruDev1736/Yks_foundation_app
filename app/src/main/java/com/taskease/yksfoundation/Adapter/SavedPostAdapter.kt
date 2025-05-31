@@ -36,6 +36,7 @@ import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
 import com.taskease.yksfoundation.Model.RequestModel.CreateCommentRequestModel
+import com.taskease.yksfoundation.Model.ResponseModel.CONTENT
 import com.taskease.yksfoundation.Model.ResponseModel.CreateCommentResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPost
 import com.taskease.yksfoundation.Model.ResponseModel.GetCommentByPostResponseModel
@@ -55,10 +56,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.microedition.khronos.opengles.GL
 
-class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSuccess: () -> Unit) :
-    RecyclerView.Adapter<PostAdapter.onViewHolder>() {
+class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLikeSuccess: () -> Unit) :
+    RecyclerView.Adapter<SavedPostAdapter.onViewHolder>() {
 
-    private var filteredList: List<GetAllPost> = list
+    private var filteredList: List<CONTENT> = list
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -73,7 +74,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         holder: onViewHolder,
         position: Int
     ) {
-        val data = filteredList[position]
+        val data = filteredList[position].post
         holder.binding.apply {
             Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic))
                 .into(imageProfile)
@@ -180,6 +181,50 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                 val chooser = Intent.createChooser(shareIntent, "Share via")
                 context.startActivity(chooser)
             }
+
+            wholeLayout.setOnLongClickListener(object : View.OnLongClickListener {
+                override fun onLongClick(v: View?): Boolean {
+                    removeSavedPost(filteredList[position].id)
+                    return true
+                }
+            })
+        }
+    }
+
+    fun removeSavedPost(id: Int) {
+        val progress = CustomProgressDialog(context)
+        progress.show()
+
+        try {
+            RetrofitInstance.getHeaderInstance().deleteSavedPost(id).enqueue(object :
+                Callback<UniversalModel> {
+                override fun onResponse(
+                    call: Call<UniversalModel>,
+                    response: Response<UniversalModel>
+                ) {
+                    progress.dismiss()
+                    if (response.isSuccessful) {
+                        val data = response.body()
+                        if (data != null && data.STS == "200") {
+                            Constant.success(context, data.MSG)
+                            onLikeSuccess.invoke()
+                        } else {
+                            Constant.error(context, data?.MSG ?: "No message")
+                        }
+                    } else {
+                        Constant.error(context, "Response unsuccessful")
+                    }
+                }
+
+                override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
+                    progress.dismiss()
+                    Constant.error(context, "Something went wrong: ${t.message}")
+                }
+            })
+        } catch (e: Exception) {
+            progress.dismiss()
+            Constant.error(context, "Exception: ${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -352,7 +397,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                 .enqueue(object :
                     Callback<CreateCommentResponseModel> {
                     override fun onResponse(
-                        call: retrofit2.Call<CreateCommentResponseModel>,
+                        call: Call<CreateCommentResponseModel>,
                         response: Response<CreateCommentResponseModel>
                     ) {
                         progress.dismiss()
@@ -378,7 +423,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                     }
 
                     override fun onFailure(
-                        call: retrofit2.Call<CreateCommentResponseModel>,
+                        call: Call<CreateCommentResponseModel>,
                         t: Throwable
                     ) {
                         progress.dismiss()
@@ -433,7 +478,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
             RetrofitInstance.getHeaderInstance().likePost(userId, id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
-                    call: retrofit2.Call<UniversalModel>,
+                    call: Call<UniversalModel>,
                     response: Response<UniversalModel>
                 ) {
                     progress.dismiss()
@@ -455,7 +500,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                     }
                 }
 
-                override fun onFailure(call: retrofit2.Call<UniversalModel>, t: Throwable) {
+                override fun onFailure(call: Call<UniversalModel>, t: Throwable) {
                     progress.dismiss()
                     Constant.error(context, "Something went wrong: ${t.message}")
                     Log.e("SelectSocietyFragment", "API call failed", t)
@@ -557,106 +602,5 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         return filteredList.size
     }
 
-
-    fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val query = constraint?.toString()?.lowercase(Locale.getDefault()) ?: ""
-                val result = if (query.isEmpty()) {
-                    list
-                } else {
-                    list.filter {
-                        it.title.lowercase(Locale.getDefault()).contains(query) ||
-                                it.content.lowercase(Locale.getDefault()).contains(query) ||
-                                it.user.fullName.lowercase(Locale.getDefault()).contains(query)
-                    }
-                }
-                return FilterResults().apply { values = result }
-            }
-
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredList = results?.values as List<GetAllPost>
-                notifyDataSetChanged()
-            }
-        }
-    }
-
-
     class onViewHolder(val binding: PostLayoutBinding) : RecyclerView.ViewHolder(binding.root)
 }
-
-
-class ImageAdapter(val context: Context, val list: List<String>) :
-    RecyclerView.Adapter<ImageAdapter.onViewHolder>() {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): onViewHolder {
-        val view = ItemImageViewpagerBinding.inflate(LayoutInflater.from(context), parent, false)
-        return onViewHolder(view, view.root)
-    }
-
-    override fun onBindViewHolder(
-        holder: onViewHolder,
-        position: Int
-    ) {
-        val data = list[position]
-        holder.binding.apply {
-            if (data.startsWith("data:image") || isBase64(data)) {
-                try {
-                    val imageBytes = Base64.decode(data.substringAfter(","), Base64.DEFAULT)
-                    val bitmap: Bitmap =
-                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    Glide.with(context).load(bitmap).into(imageView)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Glide.with(context).load(R.drawable.imagefalied).into(imageView)
-                }
-            } else {
-                Glide.with(context).load(data).into(imageView)
-            }
-
-            imageView.setOnClickListener {
-                showZoomableImageDialog(context,data)
-            }
-        }
-    }
-
-    private fun showZoomableImageDialog(context: Context, imageUrl: String) {
-        val dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_full_image)
-
-        val imageView = dialog.findViewById<PhotoView>(R.id.fullImageView)
-        val closeBtn = dialog.findViewById<ImageView>(R.id.closeButton)
-
-        // Use Glide or Picasso to load the image
-        Glide.with(context)
-            .load(Constant.base64ToBitmap(imageUrl))
-            .into(imageView)
-
-        closeBtn.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
-    }
-
-
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
-    class onViewHolder(val binding: ItemImageViewpagerBinding, itemView: View) :
-        RecyclerView.ViewHolder(binding.root)
-
-    private fun isBase64(string: String): Boolean {
-        return try {
-            Base64.decode(string, Base64.DEFAULT)
-            true
-        } catch (e: IllegalArgumentException) {
-            false
-        }
-    }
-}
-

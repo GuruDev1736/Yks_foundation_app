@@ -52,7 +52,7 @@ class PostApprovalAdapter(val context: Context, val list: List<GetAllPost> , val
             textLocation.text = data.content
             textCaption.text = data.title
             imagePost.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
-            imagePost.adapter = ImageAdapter(context,data.imageUrls)
+            imagePost.adapter = ImageAdapter(context, data.imageUrls)
 
             approve.setOnClickListener {
                 callApprovePost(data.id)

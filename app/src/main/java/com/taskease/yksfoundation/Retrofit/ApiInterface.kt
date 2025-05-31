@@ -18,6 +18,7 @@ import com.taskease.yksfoundation.Model.ResponseModel.GetUserByIdResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserByPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.GetUserBySocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.SavedPostResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import com.taskease.yksfoundation.Model.UniversalModel
 import retrofit2.Call
@@ -123,5 +124,11 @@ interface ApiInterface {
 
     @POST("saved/post")
     fun savePost(@Query("userId") userId : Int , @Query("postId") postId : Int) : Call<UniversalModel>
+
+    @GET("saved/getAll/user/{userId}")
+    fun getAllSavedPost(@Path("userId") userId : Int) : Call<SavedPostResponseModel>
+
+    @DELETE("saved/post/delete")
+    fun deleteSavedPost(@Query("savedPostId") id : Int) : Call<UniversalModel>
 }
 
