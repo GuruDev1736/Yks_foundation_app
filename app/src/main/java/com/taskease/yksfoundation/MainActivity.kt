@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cloudinary.android.MediaManager
+import com.google.firebase.messaging.FirebaseMessaging
 import com.permissionx.guolindev.PermissionX
 import com.taskease.yksfoundation.Activities.Auth.LoginActivity
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
@@ -32,10 +33,31 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM Token", token)
+                SharedPreferenceManager.saveString(SharedPreferenceManager.NOTIFICATION_TOKEN,token)
+            } else {
+                Log.d("FCM Token", "Fetching FCM registration token failed", task.exception)
+            }
+        }
+
+
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FCM", "Subscribed to topic: all")
+                } else {
+                    Log.e("FCM", "Topic subscription failed", task.exception)
+                }
+            }
+
+
         SharedPreferenceManager.init(this@MainActivity)
 
         PermissionX.init(this)
-            .permissions(android.Manifest.permission.CAMERA , android.Manifest.permission.CALL_PHONE)
+            .permissions(android.Manifest.permission.CAMERA , android.Manifest.permission.CALL_PHONE , android.Manifest.permission.POST_NOTIFICATIONS)
             .onExplainRequestReason { scope, deniedList ->
                 scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
             }

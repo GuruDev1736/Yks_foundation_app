@@ -79,7 +79,9 @@ class LoginFragment : Fragment() {
         val progress = CustomProgressDialog(requireContext())
         progress.show()
 
-        val model = LoginRequestModel(email, password)
+        val notificationToken = SharedPreferenceManager.getString(SharedPreferenceManager.NOTIFICATION_TOKEN)
+
+        val model = LoginRequestModel(email, password , notificationToken)
         RetrofitInstance.getInstance().login(model).enqueue(object : Callback<LoginResponseModel> {
             override fun onResponse(
                 call: Call<LoginResponseModel>,

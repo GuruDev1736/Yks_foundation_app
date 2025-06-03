@@ -14,6 +14,7 @@ object SharedPreferenceManager {
     const val ROLE = "role"
     const val SOCIETY_ID = "societyId"
     const val USER_NAME = "userName"
+    const val NOTIFICATION_TOKEN = "notificationToken"
 
     private lateinit var sharedPreferences: SharedPreferences
 
