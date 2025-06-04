@@ -1,8 +1,15 @@
 package com.taskease.yksfoundation.Activities
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +18,16 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.storage.FirebaseStorage
 import com.taskease.yksfoundation.Constant.Constant
@@ -28,9 +39,16 @@ import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.ActivityCreatePostBinding
 import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.IOException
+import java.util.Locale
 
 class CreatePostActivity : AppCompatActivity() {
 
@@ -45,16 +63,18 @@ class CreatePostActivity : AppCompatActivity() {
     private val tempUrisForCropping = mutableListOf<Uri>()
     private var currentCroppingIndex = 0
 
+    private val LOCATION_PERMISSION_REQUEST = 1001
 
 
-    private val launcher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
-        if (!uris.isNullOrEmpty()) {
-            tempUrisForCropping.clear()
-            tempUrisForCropping.addAll(uris)
-            currentCroppingIndex = 0
-            startCrop(tempUrisForCropping[currentCroppingIndex])
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+            if (!uris.isNullOrEmpty()) {
+                tempUrisForCropping.clear()
+                tempUrisForCropping.addAll(uris)
+                currentCroppingIndex = 0
+                startCrop(tempUrisForCropping[currentCroppingIndex])
+            }
         }
-    }
 
 
     private fun startCrop(sourceUri: Uri) {
@@ -76,33 +96,36 @@ class CreatePostActivity : AppCompatActivity() {
     }
 
 
-    private val cropImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val resultUri = UCrop.getOutput(result.data!!)
-            resultUri?.let {
-                imageUris.add(it)
-                imageAdapter.notifyDataSetChanged()
-                setupDots()
-            }
+    private val cropImageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val resultUri = UCrop.getOutput(result.data!!)
+                resultUri?.let {
+                    imageUris.add(it)
+                    imageAdapter.notifyDataSetChanged()
+                    setupDots()
+                }
 
-            currentCroppingIndex++
-            if (currentCroppingIndex < tempUrisForCropping.size) {
-                startCrop(tempUrisForCropping[currentCroppingIndex])
-            } else {
-                binding.postImages.visibility = View.GONE
-                binding.ViewpagerLayout.visibility = View.VISIBLE
+                currentCroppingIndex++
+                if (currentCroppingIndex < tempUrisForCropping.size) {
+                    startCrop(tempUrisForCropping[currentCroppingIndex])
+                } else {
+                    binding.postImages.visibility = View.GONE
+                    binding.ViewpagerLayout.visibility = View.VISIBLE
+                }
+            } else if (result.resultCode == UCrop.RESULT_ERROR) {
+                val error = UCrop.getError(result.data!!)
+                Toast.makeText(this, "Crop error: ${error?.message}", Toast.LENGTH_SHORT).show()
             }
-        } else if (result.resultCode == UCrop.RESULT_ERROR) {
-            val error = UCrop.getError(result.data!!)
-            Toast.makeText(this, "Crop error: ${error?.message}", Toast.LENGTH_SHORT).show()
         }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreatePostBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+       checkLocationEnabledAndRequest()
 
         binding.actionBar.toolbarBack.setOnClickListener {
             finish()
@@ -179,7 +202,8 @@ class CreatePostActivity : AppCompatActivity() {
         } catch (e: Exception) {
             progress.dismiss()
             e.printStackTrace()
-            Toast.makeText(this, "Failed to convert images: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to convert images: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -316,6 +340,134 @@ class CreatePostActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    private fun checkLocationEnabledAndRequest() {
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        val isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+        if (!isGPSEnabled && !isNetworkEnabled) {
+            Toast.makeText(this, "Please enable location", Toast.LENGTH_LONG).show()
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+        } else {
+            checkPermissionsAndFetchLocation()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkLocationEnabledAndRequest()
+    }
+
+    private fun checkPermissionsAndFetchLocation() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        val allGranted = permissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+
+        if (!allGranted) {
+            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST)
+        } else {
+            getCurrentLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            checkPermissionsAndFetchLocation()
+        }
+    }
+
+    private fun getCurrentLocation() {
+        val progress = CustomProgressDialog(this)
+        progress.show()
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            progress.dismiss()
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                handleLocationSuccess(location,progress)
+            } else {
+                // fallback to request location updates
+                val locationRequest = com.google.android.gms.location.LocationRequest.create().apply {
+                    priority = com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+                    interval = 1000
+                    numUpdates = 1
+                }
+
+                fusedLocationClient.requestLocationUpdates(
+                    locationRequest,
+                    object : com.google.android.gms.location.LocationCallback() {
+                        override fun onLocationResult(result: com.google.android.gms.location.LocationResult) {
+                            val newLocation = result.lastLocation
+                            if (newLocation != null) {
+                                handleLocationSuccess(newLocation,progress)
+                            } else {
+                                progress.dismiss()
+                                Toast.makeText(this@CreatePostActivity, "Unable to get location", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
+                    null
+                )
+            }
+        }.addOnFailureListener {
+            progress.dismiss()
+            Toast.makeText(this, "Location error: ${it.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleLocationSuccess(location: Location,progressDialog: CustomProgressDialog) {
+        lifecycleScope.launch {
+            Log.d("LOCATION", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
+            val address = getAddressFromCoordinates(location.latitude, location.longitude)
+            if (address != null) {
+                withContext(Dispatchers.Main) {
+                    progressDialog.dismiss()
+                    binding.location.setText(address)
+                    Log.d("LOCATION", "Address: $address")
+                }
+            } else {
+                progressDialog.dismiss()
+                Toast.makeText(this@CreatePostActivity, "Address not found", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private suspend fun getAddressFromCoordinates(latitude: Double, longitude: Double): String? {
+        return withContext(Dispatchers.IO) {
+            withTimeoutOrNull(5000) {
+                try {
+                    val geocoder = Geocoder(this@CreatePostActivity, Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                    if (!addresses.isNullOrEmpty()) {
+                        addresses[0].getAddressLine(0)
+                    } else null
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+        }
     }
 }
 

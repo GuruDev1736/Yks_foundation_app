@@ -27,7 +27,6 @@ import retrofit2.Response
 class AddUserActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityAddUserBinding
-    private lateinit var storage: FirebaseStorage
     private  var profileUrl: String? = null
     private var cameraUri: Uri? = null
 
@@ -35,8 +34,6 @@ class AddUserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        storage = FirebaseStorage.getInstance()
 
 
         binding.actionBar.toolbarTitle.text = "Add User"
@@ -107,6 +104,7 @@ class AddUserActivity : AppCompatActivity() {
 
         camera.setOnClickListener {
             openCamera()
+            dialog.dismiss()
         }
 
         gallery.setOnClickListener {
@@ -135,42 +133,19 @@ class AddUserActivity : AppCompatActivity() {
 
     private val ImagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { UploadFile(it) }
+            uri?.let {
+                profileUrl = Constant.uriToBase64(this@AddUserActivity,it)
+                Glide.with(this@AddUserActivity).load(it).into(binding.layout.profilePic)
+            }
         }
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && cameraUri != null) {
-                UploadFile(cameraUri!!)
+                profileUrl = Constant.uriToBase64(this@AddUserActivity,cameraUri!!)
+                Glide.with(this@AddUserActivity).load(cameraUri).into(binding.layout.profilePic)
             }
         }
-
-    private fun UploadFile(uri: Uri) {
-        val progressDialog = CustomProgressDialog(this@AddUserActivity)
-        progressDialog.show()
-        try {
-            storage.getReference("Yks/ProfilePic/users")
-                .child(System.currentTimeMillis().toString())
-                .putFile(uri)
-                .addOnSuccessListener { taskSnapshot ->
-                    taskSnapshot.storage.downloadUrl.addOnSuccessListener { downloadUri ->
-                        profileUrl = downloadUri.toString()
-                        Glide.with(this).load(profileUrl).into(binding.layout.profilePic)
-                        progressDialog.dismiss()
-                    }.addOnFailureListener {
-                        progressDialog.dismiss()
-                        Constant.error(this, "Failed to get download URL")
-                    }
-                }.addOnFailureListener {
-                    progressDialog.dismiss()
-                    Constant.error(this, "Something went wrong during upload")
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            progressDialog.dismiss()
-            Constant.error(this, "An error occurred")
-        }
-    }
 
     private fun callAddUser(name: String, email: String, phone: String, gender: String, address: String, password: String){
         val progress = CustomProgressDialog(this)

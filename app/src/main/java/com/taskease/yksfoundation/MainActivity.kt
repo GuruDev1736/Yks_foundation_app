@@ -20,7 +20,6 @@ import com.taskease.yksfoundation.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
 
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,10 @@ class MainActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val token = task.result
                 Log.d("FCM Token", token)
-                SharedPreferenceManager.saveString(SharedPreferenceManager.NOTIFICATION_TOKEN,token)
+                SharedPreferenceManager.saveString(
+                    SharedPreferenceManager.NOTIFICATION_TOKEN,
+                    token
+                )
             } else {
                 Log.d("FCM Token", "Fetching FCM registration token failed", task.exception)
             }
@@ -57,20 +59,35 @@ class MainActivity : AppCompatActivity() {
         SharedPreferenceManager.init(this@MainActivity)
 
         PermissionX.init(this)
-            .permissions(android.Manifest.permission.CAMERA , android.Manifest.permission.CALL_PHONE , android.Manifest.permission.POST_NOTIFICATIONS)
+            .permissions(
+                android.Manifest.permission.CAMERA,
+                android.Manifest.permission.CALL_PHONE,
+                android.Manifest.permission.POST_NOTIFICATIONS,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
             .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+                scope.showRequestReasonDialog(
+                    deniedList,
+                    "Core fundamental are based on these permissions",
+                    "OK",
+                    "Cancel"
+                )
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
-                    Handler(Looper.getMainLooper()).postDelayed(object : Runnable{
+                    Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
                         override fun run() {
                             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
                             finish()
                         }
-                    },1000)
+                    }, 1000)
                 } else {
-                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "These permissions are denied: $deniedList",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 

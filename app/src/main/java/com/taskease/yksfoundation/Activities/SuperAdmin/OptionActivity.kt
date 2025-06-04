@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.taskease.yksfoundation.Activities.Chat.ChattingActivity
 import com.taskease.yksfoundation.Constant.Constant
@@ -60,7 +61,7 @@ class OptionActivity : AppCompatActivity() {
 
         binding.actionBar.toolbarTitle.text = "Options"
 
-        binding.recyclerView.layoutManager = GridLayoutManager(this@OptionActivity,2)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this@OptionActivity)
         binding.recyclerView.adapter = adapter
 
     }

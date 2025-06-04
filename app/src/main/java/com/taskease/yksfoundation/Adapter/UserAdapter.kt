@@ -39,7 +39,7 @@ class UserAdapter(val context: Context, val list : List<GetUserBySociety>) : Rec
 
         val data = filteredList[position]
         holder.binding.apply {
-            Glide.with(context).load(data.profile_pic).placeholder(R.drawable.profile).into(imgProfile)
+            Glide.with(context).load(Constant.base64ToBitmap(data.profile_pic)).placeholder(R.drawable.profile).into(imgProfile)
             txtName.text = data.fullName
             txtEmail.text = data.email
             txtPhone.text = data.phoneNo
