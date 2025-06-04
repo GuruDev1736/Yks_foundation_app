@@ -5,5 +5,7 @@ data class ChatMessage(
     val senderId: String = "",
     val senderRole: String = "",
     val senderName: String = "",
+    val profilePic: String = "",
+    val designation : String = "",
     val timestamp: Long = 0L
 )

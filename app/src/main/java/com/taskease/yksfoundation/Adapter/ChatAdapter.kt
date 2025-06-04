@@ -1,17 +1,21 @@
 package com.taskease.yksfoundation.Adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Model.ChatMessage
 import com.taskease.yksfoundation.R
+import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ChatAdapter(private val chatList: List<ChatMessage>, private val currentUserId: String) :
+class ChatAdapter(private val context: Context , private val chatList: List<ChatMessage>, private val currentUserId: String) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val VIEW_TYPE_SENDER = 1
@@ -20,11 +24,15 @@ class ChatAdapter(private val chatList: List<ChatMessage>, private val currentUs
     inner class SenderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvMessage: TextView = itemView.findViewById(R.id.tvMessage)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
+        val profilePic: CircleImageView = itemView.findViewById(R.id.profilePic)
+        val name: TextView = itemView.findViewById(R.id.name)
     }
 
     inner class ReceiverViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvMessage: TextView = itemView.findViewById(R.id.tvMessage)
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
+        val profilePic: CircleImageView = itemView.findViewById(R.id.profilePic)
+        val name: TextView = itemView.findViewById(R.id.name)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -48,11 +56,15 @@ class ChatAdapter(private val chatList: List<ChatMessage>, private val currentUs
         val time = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(chat.timestamp))
 
         if (holder is SenderViewHolder) {
+            holder.name.text = chat.senderName
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
+            Glide.with(context).load(Constant.base64ToBitmap(chat.profilePic)).error(R.drawable.imagefalied).into(holder.profilePic)
         } else if (holder is ReceiverViewHolder) {
+            holder.name.text = chat.senderName
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
+            Glide.with(context).load(Constant.base64ToBitmap(chat.profilePic)).error(R.drawable.imagefalied).into(holder.profilePic)
         }
     }
 

@@ -46,7 +46,7 @@ class ChattingActivity : AppCompatActivity() {
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this)
-        chatAdapter = ChatAdapter(chatMessages, userId.toString()) // Replace with dynamic ID
+        chatAdapter = ChatAdapter(this@ChattingActivity,chatMessages, userId.toString()) // Replace with dynamic ID
         binding.chatRecyclerView.adapter = chatAdapter
 
         val role = SharedPreferenceManager.getString(SharedPreferenceManager.ROLE)
