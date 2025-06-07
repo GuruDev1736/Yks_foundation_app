@@ -26,8 +26,8 @@ import retrofit2.Response
 
 class AddUserActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityAddUserBinding
-    private  var profileUrl: String? = null
+    private lateinit var binding: ActivityAddUserBinding
+    private var profileUrl: String? = null
     private var cameraUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +42,11 @@ class AddUserActivity : AppCompatActivity() {
         }
 
         binding.layout.profilePic.setOnClickListener {
-            showCustomDialog(this@AddUserActivity)
+            Constant.showImageChooserDialog(this@AddUserActivity, {
+                openCamera()
+            }, {
+                ImagePickerLauncher.launch("image/*")
+            })
         }
 
         binding.layout.submit.setOnClickListener {
@@ -55,16 +59,22 @@ class AddUserActivity : AppCompatActivity() {
             val password = binding.layout.password.text.toString()
 
 
-            if (valid(name,email,phone,gender,address,password))
-            {
-                callAddUser(name,email,phone,gender,address,password)
+            if (valid(name, email, phone, gender, address, password)) {
+                callAddUser(name, email, phone, gender, address, password)
             }
         }
 
     }
 
 
-    private fun valid(name: String, email: String, phone: String, gender: String, address: String, password: String): Boolean {
+    private fun valid(
+        name: String,
+        email: String,
+        phone: String,
+        gender: String,
+        address: String,
+        password: String
+    ): Boolean {
         if (name.isEmpty()) {
             Constant.error(this@AddUserActivity, "Name is required")
             return false
@@ -92,41 +102,13 @@ class AddUserActivity : AppCompatActivity() {
         return true
     }
 
-
-    fun showCustomDialog(context: Context) {
-        val dialog = Dialog(context)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        val view = LayoutInflater.from(context).inflate(R.layout.capture_options, null)
-        dialog.setContentView(view)
-
-        val camera = view.findViewById<View>(R.id.camera)
-        val gallery = view.findViewById<View>(R.id.gallery)
-
-        camera.setOnClickListener {
-            openCamera()
-            dialog.dismiss()
-        }
-
-        gallery.setOnClickListener {
-            ImagePickerLauncher.launch("image/*")
-            dialog.dismiss()
-        }
-
-        dialog.window?.setLayout(
-            (context.resources.displayMetrics.widthPixels * 0.8).toInt(), // 90% of screen width
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
-    }
-
-
     private fun openCamera() {
         val contentValues = android.content.ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
         }
-        cameraUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        cameraUri =
+            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
         cameraUri?.let { cameraLauncher.launch(it) }
     }
 
@@ -134,7 +116,7 @@ class AddUserActivity : AppCompatActivity() {
     private val ImagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                profileUrl = Constant.uriToBase64(this@AddUserActivity,it)
+                profileUrl = Constant.uriToBase64(this@AddUserActivity, it)
                 Glide.with(this@AddUserActivity).load(it).into(binding.layout.profilePic)
             }
         }
@@ -142,21 +124,37 @@ class AddUserActivity : AppCompatActivity() {
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && cameraUri != null) {
-                profileUrl = Constant.uriToBase64(this@AddUserActivity,cameraUri!!)
+                profileUrl = Constant.uriToBase64(this@AddUserActivity, cameraUri!!)
                 Glide.with(this@AddUserActivity).load(cameraUri).into(binding.layout.profilePic)
             }
         }
 
-    private fun callAddUser(name: String, email: String, phone: String, gender: String, address: String, password: String){
+    private fun callAddUser(
+        name: String,
+        email: String,
+        phone: String,
+        gender: String,
+        address: String,
+        password: String
+    ) {
         val progress = CustomProgressDialog(this)
         progress.show()
 
         val societyId = intent.getIntExtra("id", -1)
 
-        val model = CreateUserBySuperAdminRequestModel(address,email,true,name,gender,password,phone,profileUrl.toString())
+        val model = CreateUserBySuperAdminRequestModel(
+            address,
+            email,
+            true,
+            name,
+            gender,
+            password,
+            phone,
+            profileUrl.toString()
+        )
 
         try {
-            RetrofitInstance.getHeaderInstance().registerNewUser(societyId,model).enqueue(object :
+            RetrofitInstance.getHeaderInstance().registerNewUser(societyId, model).enqueue(object :
                 Callback<UserRegisterResponseModel> {
                 override fun onResponse(
                     call: retrofit2.Call<UserRegisterResponseModel>,
@@ -181,7 +179,10 @@ class AddUserActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: retrofit2.Call<UserRegisterResponseModel>, t: Throwable) {
+                override fun onFailure(
+                    call: retrofit2.Call<UserRegisterResponseModel>,
+                    t: Throwable
+                ) {
                     progress.dismiss()
                     Constant.error(this@AddUserActivity, "Something went wrong: ${t.message}")
                     Log.e("SelectSocietyFragment", "API call failed", t)

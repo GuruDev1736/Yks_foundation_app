@@ -36,7 +36,7 @@ class UserApprovalAdapter(val context: Context, val list: List<User> , val liste
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = list[position]
         holder.binding.apply {
-            val profilePicture = Constant.base64ToBitmap(data.profile_pic)
+            val profilePicture = Constant.base64ToBitmap(data.profile_pic.toString())
             Glide.with(context).load(profilePicture).placeholder(R.drawable.imagefalied).into(profilePic)
             name.text = data.fullName
             email.text = data.email

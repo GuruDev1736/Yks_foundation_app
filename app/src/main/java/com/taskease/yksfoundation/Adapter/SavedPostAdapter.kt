@@ -56,7 +56,11 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.microedition.khronos.opengles.GL
 
-class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLikeSuccess: () -> Unit) :
+class SavedPostAdapter(
+    val context: Context,
+    val list: List<CONTENT>,
+    val onLikeSuccess: () -> Unit
+) :
     RecyclerView.Adapter<SavedPostAdapter.onViewHolder>() {
 
     private var filteredList: List<CONTENT> = list
@@ -76,7 +80,8 @@ class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLike
     ) {
         val data = filteredList[position].post
         holder.binding.apply {
-            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic))
+            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic.toString()))
+                .error(R.drawable.imagefalied)
                 .into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
@@ -168,7 +173,14 @@ class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLike
             }
 
             profileRow.setOnClickListener {
-                showUserDialog(context, data.user.fullName, data.user.designation, data.user.profile_pic,data.user.gender,data.user.address)
+                showUserDialog(
+                    context,
+                    data.user.fullName.toString(),
+                    data.user.designation.toString(),
+                    data.user.profile_pic.toString(),
+                    data.user.gender.toString(),
+                    data.user.address.toString()
+                )
             }
 
             iconShare.setOnClickListener {
@@ -182,12 +194,9 @@ class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLike
                 context.startActivity(chooser)
             }
 
-            wholeLayout.setOnLongClickListener(object : View.OnLongClickListener {
-                override fun onLongClick(v: View?): Boolean {
-                    removeSavedPost(filteredList[position].id)
-                    return true
-                }
-            })
+            iconSave.setOnClickListener {
+                removeSavedPost(filteredList[position].id)
+            }
         }
     }
 
@@ -228,16 +237,24 @@ class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLike
         }
     }
 
-    fun showUserDialog(context: Context, name: String, designation: String, imageResId: String , gender : String , location : String) {
+    fun showUserDialog(
+        context: Context,
+        name: String,
+        designation: String,
+        imageResId: String,
+        gender: String,
+        location: String
+    ) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_user_profile, null)
 
         val imageView = dialogView.findViewById<ImageView>(R.id.imageViewProfile)
         val nameText = dialogView.findViewById<TextView>(R.id.textViewName)
         val designationText = dialogView.findViewById<TextView>(R.id.textViewDesignation)
         val genderUser = dialogView.findViewById<TextView>(R.id.gender)
-        val locationUser= dialogView.findViewById<TextView>(R.id.location)
+        val locationUser = dialogView.findViewById<TextView>(R.id.location)
 
-        Glide.with(context).load(Constant.base64ToBitmap(imageResId)).error(R.drawable.imagefalied).into(imageView)
+        Glide.with(context).load(Constant.base64ToBitmap(imageResId)).error(R.drawable.imagefalied)
+            .into(imageView)
         nameText.text = name
         designationText.text = designation
         genderUser.text = gender
@@ -559,7 +576,7 @@ class SavedPostAdapter(val context: Context, val list: List<CONTENT>, val onLike
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
         try {
-            RetrofitInstance.getHeaderInstance().savePost(userId,id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().savePost(userId, id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,

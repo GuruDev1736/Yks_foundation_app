@@ -3,11 +3,15 @@
     <!-- Allow cleartext traffic for specific domains -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">192.168.0.105</domain>
+        <domain includeSubdomains="true">192.168.0.102</domain>
+        <domain includeSubdomains="true">192.168.0.111</domain>
         <domain includeSubdomains="true">192.168.0.109</domain>
         <domain includeSubdomains="true">192.168.0.108</domain>
         <domain includeSubdomains="true">192.168.1.11</domain>
+        <domain includeSubdomains="true">192.168.1.6</domain>
         <domain includeSubdomains="true">192.168.1.10</domain>
         <domain includeSubdomains="true">192.168.32.218</domain>
+        <domain includeSubdomains="true">172.20.0.5</domain>
     </domain-config>
 
     <base-config cleartextTrafficPermitted="false" />

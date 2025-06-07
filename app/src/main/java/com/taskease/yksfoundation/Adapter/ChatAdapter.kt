@@ -1,9 +1,12 @@
 package com.taskease.yksfoundation.Adapter
 
+import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -60,13 +63,59 @@ class ChatAdapter(private val context: Context , private val chatList: List<Chat
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
             Glide.with(context).load(Constant.base64ToBitmap(chat.profilePic)).error(R.drawable.imagefalied).into(holder.profilePic)
+            holder.profilePic.setOnClickListener {
+                showUserDialog(context,chat.senderName,chat.designation, chat.profilePic)
+            }
         } else if (holder is ReceiverViewHolder) {
             holder.name.text = chat.senderName
             holder.tvMessage.text = chat.message
             holder.tvTimestamp.text = time
             Glide.with(context).load(Constant.base64ToBitmap(chat.profilePic)).error(R.drawable.imagefalied).into(holder.profilePic)
+            holder.profilePic.setOnClickListener {
+                showUserDialog(context,chat.senderName,chat.designation, chat.profilePic)
+            }
         }
+
     }
+
+    fun showUserDialog(
+        context: Context,
+        name: String,
+        designation: String,
+        imageResId: String?,
+    ) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_user_profile, null)
+
+        val imageView = dialogView.findViewById<ImageView?>(R.id.imageViewProfile)
+        val nameText = dialogView.findViewById<TextView?>(R.id.textViewName)
+        val designationText = dialogView.findViewById<TextView?>(R.id.textViewDesignation)
+        val genderUser = dialogView.findViewById<LinearLayout?>(R.id.genderLayout)
+        val locationUser = dialogView.findViewById<LinearLayout?>(R.id.locationLayout)
+
+        genderUser.visibility = View.GONE
+        locationUser.visibility = View.GONE
+
+        // Set image with null-safe Base64 decode
+        val bitmap = if (!imageResId.isNullOrBlank()) Constant.base64ToBitmap(imageResId) else null
+        if (bitmap != null && imageView != null) {
+            Glide.with(context)
+                .load(bitmap)
+                .error(R.drawable.imagefalied)
+                .into(imageView)
+        } else {
+            imageView?.setImageResource(R.drawable.imagefalied)
+        }
+
+        // Set other fields only if views are not null
+        nameText?.text = name
+        designationText?.text = designation
+
+        AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(true)
+            .show()
+    }
+
 
     override fun getItemCount(): Int = chatList.size
 }

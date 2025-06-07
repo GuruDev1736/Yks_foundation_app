@@ -8,9 +8,9 @@ data class UserRegisterResponseModel(
 
 data class UserRegisterResponse(
     val address: String,
-    val anniversary: Long,
+    val anniversary: String,
     val bannerUrl: String,
-    val birthdate: Long,
+    val birthdate: String,
     val completeProfile: Boolean,
     val designation: String,
     val email: String,

@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.storage.FirebaseStorage
+import com.taskease.yksfoundation.Activities.SuperAdmin.AddUserActivity
 import com.taskease.yksfoundation.Adapter.UserAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
@@ -156,42 +157,21 @@ class AddAdminActivity : AppCompatActivity() {
 
     private val ImagePickerLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { UploadFile(it) }
+            uri?.let {
+                profileUrl = Constant.uriToBase64(this@AddAdminActivity,it)
+                Glide.with(this@AddAdminActivity).load(it).into(profilePic)
+            }
         }
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success && cameraUri != null) {
-                UploadFile(cameraUri!!)
+                profileUrl = Constant.uriToBase64(this@AddAdminActivity,cameraUri!!)
+                Glide.with(this@AddAdminActivity).load(cameraUri).into(profilePic)
             }
         }
 
-    private fun UploadFile(uri: Uri) {
-        val progressDialog = CustomProgressDialog(this@AddAdminActivity)
-        progressDialog.show()
-        try {
-            storage.getReference("Yks/ProfilePic/admins")
-                .child(System.currentTimeMillis().toString())
-                .putFile(uri)
-                .addOnSuccessListener { taskSnapshot ->
-                    taskSnapshot.storage.downloadUrl.addOnSuccessListener { downloadUri ->
-                        profileUrl = downloadUri.toString()
-                        Glide.with(this).load(profileUrl).into(profilePic)
-                        progressDialog.dismiss()
-                    }.addOnFailureListener {
-                        progressDialog.dismiss()
-                        Constant.error(this, "Failed to get download URL")
-                    }
-                }.addOnFailureListener {
-                    progressDialog.dismiss()
-                    Constant.error(this, "Something went wrong during upload")
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            progressDialog.dismiss()
-            Constant.error(this, "An error occurred")
-        }
-    }
+
 
     private fun callAddAdmin(name: String, email: String, phone: String, gender: String, address: String, password: String, dialog: Dialog){
         val progress = CustomProgressDialog(this)

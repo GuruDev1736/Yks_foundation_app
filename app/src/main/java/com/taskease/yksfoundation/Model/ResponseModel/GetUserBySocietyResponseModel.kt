@@ -8,9 +8,9 @@ data class GetUserBySocietyResponseModel(
 
 data class GetUserBySociety(
     val address: String,
-    val anniversary: Long,
-    val bannerUrl: Any,
-    val birthdate: Long,
+    val anniversary: String,
+    val bannerUrl: String,
+    val birthdate: String,
     val completeProfile: Boolean,
     val designation: String,
     val email: String,

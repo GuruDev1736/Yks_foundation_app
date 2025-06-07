@@ -6,6 +6,7 @@ import com.taskease.yksfoundation.Model.RequestModel.CreateCommentRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreatePostRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.CreateUserBySuperAdminRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
+import com.taskease.yksfoundation.Model.RequestModel.UpdateProfileRequestModel
 import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.AddSocietyResponseModel
 import com.taskease.yksfoundation.Model.ResponseModel.CreateCommentResponseModel
@@ -128,7 +129,13 @@ interface ApiInterface {
     @GET("saved/getAll/user/{userId}")
     fun getAllSavedPost(@Path("userId") userId : Int) : Call<SavedPostResponseModel>
 
-    @DELETE("saved/post/delete")
-    fun deleteSavedPost(@Query("savedPostId") id : Int) : Call<UniversalModel>
+    @PUT("user/update/{userId}")
+    fun updateProfile(@Path("userId") userId: Int, @Body model: UpdateProfileRequestModel): Call<UserRegisterResponseModel>
+
+    @PUT("user/update/profilePic/{userId}")
+    fun updateProfilePic(@Path("userId") userId: Int, @Body model : Map<String, String>): Call<UniversalModel>
+
+    @DELETE("saved/post/delete/{id}")
+    fun deleteSavedPost(@Path("id") id : Int) : Call<UniversalModel>
 }
 

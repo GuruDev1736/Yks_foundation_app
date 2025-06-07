@@ -75,7 +75,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
     ) {
         val data = filteredList[position]
         holder.binding.apply {
-            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic))
+            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic.toString())).error(R.drawable.imagefalied)
                 .into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
@@ -101,7 +101,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                 }
             }
 
-            val timestamp = getRelativeTime(data.createdDate)
+            val timestamp = Constant.getRelativeTime(data.createdDate)
             textTime.text = timestamp
 
             iconLike.setOnClickListener {
@@ -167,7 +167,20 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
             }
 
             profileRow.setOnClickListener {
-                showUserDialog(context, data.user.fullName, data.user.designation, data.user.profile_pic,data.user.gender,data.user.address)
+                try {
+
+                    showUserDialog(
+                        context,
+                        data.user.fullName.toString(),
+                        data.user.designation.toString(),
+                        data.user.profile_pic.toString(),
+                        data.user.gender.toString(),
+                        data.user.address.toString()
+                    )
+                }catch (e : Exception)
+                {
+                    Constant.error(context,"Failed to Show Details")
+                }
             }
 
             iconShare.setOnClickListener {
@@ -183,20 +196,38 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         }
     }
 
-    fun showUserDialog(context: Context, name: String, designation: String, imageResId: String , gender : String , location : String) {
+    fun showUserDialog(
+        context: Context,
+        name: String,
+        designation: String,
+        imageResId: String?,
+        gender: String,
+        location: String
+    ) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_user_profile, null)
 
-        val imageView = dialogView.findViewById<ImageView>(R.id.imageViewProfile)
-        val nameText = dialogView.findViewById<TextView>(R.id.textViewName)
-        val designationText = dialogView.findViewById<TextView>(R.id.textViewDesignation)
-        val genderUser = dialogView.findViewById<TextView>(R.id.gender)
-        val locationUser= dialogView.findViewById<TextView>(R.id.location)
+        val imageView = dialogView.findViewById<ImageView?>(R.id.imageViewProfile)
+        val nameText = dialogView.findViewById<TextView?>(R.id.textViewName)
+        val designationText = dialogView.findViewById<TextView?>(R.id.textViewDesignation)
+        val genderUser = dialogView.findViewById<TextView?>(R.id.gender)
+        val locationUser = dialogView.findViewById<TextView?>(R.id.location)
 
-        Glide.with(context).load(Constant.base64ToBitmap(imageResId)).error(R.drawable.imagefalied).into(imageView)
-        nameText.text = name
-        designationText.text = designation
-        genderUser.text = gender
-        locationUser.text = location
+        // Set image with null-safe Base64 decode
+        val bitmap = if (!imageResId.isNullOrBlank()) Constant.base64ToBitmap(imageResId) else null
+        if (bitmap != null && imageView != null) {
+            Glide.with(context)
+                .load(bitmap)
+                .error(R.drawable.imagefalied)
+                .into(imageView)
+        } else {
+            imageView?.setImageResource(R.drawable.imagefalied)
+        }
+
+        // Set other fields only if views are not null
+        nameText?.text = name
+        designationText?.text = designation
+        genderUser?.text = gender
+        locationUser?.text = location
 
         AlertDialog.Builder(context)
             .setView(dialogView)
@@ -393,36 +424,6 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         }
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getRelativeTime(timestamp: List<Int>): String {
-        // Convert timestamp to ZonedDateTime in UTC or your server's time zone
-        val postTime = ZonedDateTime.of(
-            timestamp[0],
-            timestamp[1],
-            timestamp[2],
-            timestamp[3],
-            timestamp[4],
-            timestamp[5],
-            timestamp.getOrElse(6) { 0 },
-            ZoneOffset.UTC // adjust if your backend uses a different zone
-        )
-
-        // Get current time in the same time zone
-        val now = ZonedDateTime.now(ZoneOffset.UTC)
-
-        val duration = Duration.between(postTime, now)
-
-        return when {
-            duration.toMinutes() < 1 -> "Just now"
-            duration.toMinutes() < 60 -> "${duration.toMinutes()} minutes ago"
-            duration.toHours() < 24 -> "${duration.toHours()} hours ago"
-            duration.toDays() == 1L -> "Yesterday"
-            duration.toDays() < 7 -> "${duration.toDays()} days ago"
-            else -> postTime.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
-        }
-    }
-
     private fun callLikeAPI(id: Int) {
         val progress = CustomProgressDialog(context)
         progress.show()
@@ -514,7 +515,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
         try {
-            RetrofitInstance.getHeaderInstance().savePost(userId,id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().savePost(userId, id).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,
@@ -568,7 +569,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                     list.filter {
                         it.title.lowercase(Locale.getDefault()).contains(query) ||
                                 it.content.lowercase(Locale.getDefault()).contains(query) ||
-                                it.user.fullName.lowercase(Locale.getDefault()).contains(query)
+                                it.user.fullName!!.lowercase(Locale.getDefault()).contains(query)
                     }
                 }
                 return FilterResults().apply { values = result }
@@ -617,7 +618,7 @@ class ImageAdapter(val context: Context, val list: List<String>) :
             }
 
             imageView.setOnClickListener {
-                showZoomableImageDialog(context,data)
+                showZoomableImageDialog(context, data)
             }
         }
     }
