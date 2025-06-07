@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,6 +79,4 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.1.0")
     implementation ("com.github.chrisbanes:PhotoView:2.3.0")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
-
-
 }

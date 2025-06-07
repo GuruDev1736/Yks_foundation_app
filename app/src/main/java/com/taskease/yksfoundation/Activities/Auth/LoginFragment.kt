@@ -13,8 +13,12 @@ import com.taskease.yksfoundation.Activities.SuperAdmin.SuperAdminHomeActivity
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
+import com.taskease.yksfoundation.MainActivity
 import com.taskease.yksfoundation.Model.RequestModel.LoginRequestModel
+import com.taskease.yksfoundation.Model.RequestModel.UserRegisterRequestModel
 import com.taskease.yksfoundation.Model.ResponseModel.LoginResponseModel
+import com.taskease.yksfoundation.Model.ResponseModel.User
+import com.taskease.yksfoundation.Model.ResponseModel.UserRegisterResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
 import com.taskease.yksfoundation.databinding.FragmentLoginBinding
@@ -66,11 +70,13 @@ class LoginFragment : Fragment() {
                 binding.email.requestFocus()
                 false
             }
+
             password.isEmpty() -> {
                 binding.password.error = "Password is required"
                 binding.password.requestFocus()
                 false
             }
+
             else -> true
         }
     }
@@ -79,9 +85,10 @@ class LoginFragment : Fragment() {
         val progress = CustomProgressDialog(requireContext())
         progress.show()
 
-        val notificationToken = SharedPreferenceManager.getString(SharedPreferenceManager.NOTIFICATION_TOKEN)
+        val notificationToken =
+            SharedPreferenceManager.getString(SharedPreferenceManager.NOTIFICATION_TOKEN)
 
-        val model = LoginRequestModel(email, password , notificationToken)
+        val model = LoginRequestModel(email, password, notificationToken)
         RetrofitInstance.getInstance().login(model).enqueue(object : Callback<LoginResponseModel> {
             override fun onResponse(
                 call: Call<LoginResponseModel>,
@@ -96,22 +103,51 @@ class LoginFragment : Fragment() {
 
                             // Save user data
                             SharedPreferenceManager.saveString(SharedPreferenceManager.EMAIL, email)
-                            SharedPreferenceManager.saveString(SharedPreferenceManager.PASSWORD, password)
-                            SharedPreferenceManager.saveInt(SharedPreferenceManager.USER_ID, data.CONTENT.userId)
-                            SharedPreferenceManager.saveString(SharedPreferenceManager.TOKEN, "Bearer ${data.CONTENT.token}")
-                            SharedPreferenceManager.saveString(SharedPreferenceManager.ROLE, data.CONTENT.userRole)
-                            SharedPreferenceManager.saveInt(SharedPreferenceManager.SOCIETY_ID, data.CONTENT.societyId)
-                            SharedPreferenceManager.saveString(SharedPreferenceManager.USER_NAME,data.CONTENT.fullName)
+                            SharedPreferenceManager.saveString(
+                                SharedPreferenceManager.PASSWORD,
+                                password
+                            )
+                            SharedPreferenceManager.saveInt(
+                                SharedPreferenceManager.USER_ID,
+                                data.CONTENT.userId
+                            )
+                            SharedPreferenceManager.saveString(
+                                SharedPreferenceManager.TOKEN,
+                                "Bearer ${data.CONTENT.token}"
+                            )
+                            SharedPreferenceManager.saveString(
+                                SharedPreferenceManager.ROLE,
+                                data.CONTENT.userRole
+                            )
+                            SharedPreferenceManager.saveInt(
+                                SharedPreferenceManager.SOCIETY_ID,
+                                data.CONTENT.societyId
+                            )
+                            SharedPreferenceManager.saveString(
+                                SharedPreferenceManager.USER_NAME,
+                                data.CONTENT.fullName
+                            )
 
                             // Navigate to next activity
                             if (data.CONTENT.enabled) {
                                 when (data.CONTENT.userRole) {
                                     "ROLE_SUPER_ADMIN" -> {
-                                        startActivity(Intent(requireContext(), SuperAdminHomeActivity::class.java))
+                                        startActivity(
+                                            Intent(
+                                                requireContext(),
+                                                SuperAdminHomeActivity::class.java
+                                            )
+                                        )
                                         requireActivity().finish()
                                     }
+
                                     "ROLE_ADMIN", "ROLE_USER" -> {
-                                        startActivity(Intent(requireContext(), HomeActivity::class.java))
+                                        startActivity(
+                                            Intent(
+                                                requireContext(),
+                                                HomeActivity::class.java
+                                            )
+                                        )
                                         requireActivity().finish()
                                     }
                                 }
