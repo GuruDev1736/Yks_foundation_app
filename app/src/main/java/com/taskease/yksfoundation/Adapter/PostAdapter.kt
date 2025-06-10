@@ -75,7 +75,12 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
     ) {
         val data = filteredList[position]
         holder.binding.apply {
-            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic.toString())).error(R.drawable.imagefalied)
+
+
+            pageCount.text = "${data.imageUrls.size}"
+
+            Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic.toString()))
+                .error(R.drawable.imagefalied)
                 .into(imageProfile)
             textUsername.text = data.user.fullName
             textLocation.text = data.content
@@ -177,9 +182,8 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                         data.user.gender.toString(),
                         data.user.address.toString()
                     )
-                }catch (e : Exception)
-                {
-                    Constant.error(context,"Failed to Show Details")
+                } catch (e: Exception) {
+                    Constant.error(context, "Failed to Show Details")
                 }
             }
 
@@ -305,11 +309,13 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         val comment = view.findViewById<EditText>(R.id.comment)
 
         send.setOnClickListener {
-            val comment = comment.text.toString()
-            if (comment.isEmpty()) {
+            val commentText = comment.text.toString()
+            if (commentText.isEmpty()) {
                 Constant.error(context, "Please enter a comment")
+            } else if (commentText.length > 100) {
+                Constant.error(context, "Comment should be less than 100 characters")
             } else {
-                sendComment(postId, comment, bottomSheetDialog)
+                sendComment(postId, commentText, bottomSheetDialog, recyclerView, comment)
             }
         }
 
@@ -370,13 +376,19 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         }
     }
 
-    private fun sendComment(postId: Int, comment: String, bottomDialogSheet: BottomSheetDialog) {
+    private fun sendComment(
+        postId: Int,
+        commentText: String,
+        bottomDialogSheet: BottomSheetDialog,
+        recyclerView: RecyclerView,
+        comment: EditText
+    ) {
         val progress = CustomProgressDialog(context)
         progress.show()
 
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
-        val model = CreateCommentRequestModel(comment)
+        val model = CreateCommentRequestModel(commentText)
 
         try {
             RetrofitInstance.getHeaderInstance().createComment(userId, postId, model)
@@ -391,8 +403,8 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
                             val data = response.body()
                             if (data != null) {
                                 if (data.STS == "200") {
-                                    Constant.success(context, data.MSG)
-                                    bottomDialogSheet.dismiss()
+                                    callGetCommentPost(postId, recyclerView)
+                                    comment.setText("")
                                 } else {
                                     Constant.error(context, data.MSG)
                                 }
@@ -620,6 +632,7 @@ class ImageAdapter(val context: Context, val list: List<String>) :
             imageView.setOnClickListener {
                 showZoomableImageDialog(context, data)
             }
+
         }
     }
 

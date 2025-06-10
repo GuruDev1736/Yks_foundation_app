@@ -17,6 +17,7 @@ import com.taskease.yksfoundation.Adapter.PostAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
+import com.taskease.yksfoundation.Model.ResponseModel.GetAllPost
 import com.taskease.yksfoundation.Model.ResponseModel.GetAllPostResponseModel
 import com.taskease.yksfoundation.R
 import com.taskease.yksfoundation.Retrofit.RetrofitInstance
@@ -29,6 +30,7 @@ class AdminHomeFragment : Fragment() {
 
     private lateinit var binding : FragmentAdminHomeBinding
     private lateinit var adapter : PostAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -130,4 +132,6 @@ class AdminHomeFragment : Fragment() {
             e.printStackTrace()
         }
     }
+
+
 }

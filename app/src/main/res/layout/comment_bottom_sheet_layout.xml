@@ -43,6 +43,9 @@
             app:endIconMode="clear_text"
             android:layout_width="0dp"
             android:layout_weight="1"
+            app:counterEnabled="true"
+            app:counterMaxLength="100"
+            app:counterOverflowTextColor="@color/red"
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
