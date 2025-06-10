@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -45,6 +46,8 @@ class ChattingActivity : AppCompatActivity() {
 
         val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
+        binding.chatRecyclerView.itemAnimator = null
+        binding.chatRecyclerView.setHasFixedSize(true)
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this)
         chatAdapter = ChatAdapter(this@ChattingActivity,chatMessages, userId.toString())
         binding.chatRecyclerView.adapter = chatAdapter
@@ -93,8 +96,8 @@ class ChattingActivity : AppCompatActivity() {
                             val data = response.body()
                             if (data != null) {
                                 if (data.STS == "200") {
-                                    Constant.success(this@ChattingActivity, data.MSG)
                                     binding.message.setText("")
+                                    Constant.showKeyboard(this@ChattingActivity,binding.message)
                                 } else {
                                     Constant.error(this@ChattingActivity, data.MSG)
                                 }
@@ -124,23 +127,36 @@ class ChattingActivity : AppCompatActivity() {
     }
 
     private fun fetchChatMessages(societyId: Int) {
-
         val databaseRef = FirebaseDatabase.getInstance().getReference("chats/$societyId/messages")
-        databaseRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                chatMessages.clear()
-                for (messageSnapshot in snapshot.children) {
-                    val chat = messageSnapshot.getValue(ChatMessage::class.java)
-                    chat?.let { chatMessages.add(it) }
-                }
-                chatAdapter.notifyDataSetChanged()
 
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+        databaseRef.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                // Run the heavy work off the main thread
+                Thread {
+                    val chat = snapshot.getValue(ChatMessage::class.java)
+
+                    // Post the UI update back to the main thread
+                    chat?.let {
+                        runOnUiThread {
+                            chatMessages.add(it)
+                            chatAdapter.notifyItemInserted(chatMessages.size - 1)
+
+                            // Smooth scroll with slight delay
+                            binding.chatRecyclerView.postDelayed({
+                                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                            }, 100)
+                        }
+                    }
+                }.start()
             }
 
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ChattingActivity, "Error: ${error.message}", Toast.LENGTH_SHORT)
-                    .show()
+                runOnUiThread {
+                    Toast.makeText(this@ChattingActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }

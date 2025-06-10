@@ -109,6 +109,7 @@
     <LinearLayout
         android:layout_gravity="center"
         android:gravity="center"
+        android:visibility="gone"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginTop="10dp"
@@ -151,6 +152,7 @@
         android:layout_margin="10dp"
         android:backgroundTint="@color/white"
         android:padding="15dp"
+        android:visibility="gone"
         android:drawableLeft="@drawable/google"
         android:text="Sign up with Google"
         android:textStyle="bold"
