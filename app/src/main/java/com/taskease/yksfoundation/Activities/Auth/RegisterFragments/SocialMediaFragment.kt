@@ -114,6 +114,7 @@ class SocialMediaFragment : Fragment() {
             val snapchat = binding.snapChatProfile.text.toString()
             val linkedIn = binding.linkedInProfile.text.toString()
 
+
             viewModel.socialDetails(facebook, twitter, instagram, linkedIn, snapchat)
             val viewPager = (context as RegisterActivity).getViewPager()
             viewPager.currentItem += 1
