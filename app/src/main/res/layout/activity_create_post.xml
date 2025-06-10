@@ -86,6 +86,13 @@
 
             </LinearLayout>
 
+            <Button
+                android:id="@+id/addPhotos"
+                android:layout_width="match_parent"
+                android:layout_margin="10dp"
+                android:layout_height="wrap_content"
+                android:text="Add Photos"/>
+
 
             <TextView
                 android:layout_width="match_parent"

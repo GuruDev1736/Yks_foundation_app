@@ -17,9 +17,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -63,7 +65,10 @@ class CreatePostActivity : AppCompatActivity() {
     private val tempUrisForCropping = mutableListOf<Uri>()
     private var currentCroppingIndex = 0
 
+    private var cameraTempUri: Uri? = null
+
     private val LOCATION_PERMISSION_REQUEST = 1001
+    private var isCapturingMultiplePhotos = false
 
 
     private val launcher =
@@ -75,6 +80,56 @@ class CreatePostActivity : AppCompatActivity() {
                 startCrop(tempUrisForCropping[currentCroppingIndex])
             }
         }
+
+    private val cameraLauncher =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                cameraTempUri?.let { uri ->
+                    // For camera, we only process one image at a time for cropping
+                    tempUrisForCropping.clear() // Clear any previous temporary URIs
+                    tempUrisForCropping.add(uri) // Add the just-captured image URI
+                    currentCroppingIndex = 0 // Always 0 for a single camera image
+                    startCrop(tempUrisForCropping[currentCroppingIndex])
+                }
+            } else {
+                Toast.makeText(this, "Failed to capture image from camera.", Toast.LENGTH_SHORT).show()
+                cameraTempUri = null // Clear temporary URI if capture failed
+                // If user cancels camera capture during multi-photo mode, prompt them
+                if (isCapturingMultiplePhotos) {
+                    showContinueCaptureDialog() // Ask if they want to try again or stop
+                } else {
+                    // If it was a single capture, just revert UI visibility if no images selected
+                    if (imageUris.isEmpty()) {
+                        binding.postImages.visibility = View.VISIBLE
+                        binding.ViewpagerLayout.visibility = View.GONE
+                    }
+                }
+            }
+        }
+
+    private fun showContinueCaptureDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Add More Photos?")
+            .setMessage("Do you want to take another picture?")
+            .setPositiveButton("Yes") { dialog, which ->
+                launchCamera() // Re-launch camera
+            }
+            .setNegativeButton("No") { dialog, which ->
+                isCapturingMultiplePhotos = false // End multi-capture mode
+                // Finalize UI state after user decides to stop
+                binding.postImages.visibility = View.GONE
+                binding.ViewpagerLayout.visibility = View.VISIBLE
+                if (imageUris.isEmpty()) {
+                    Toast.makeText(this, "No photos captured.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Finished capturing photos.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setCancelable(false) // Prevent dismissing without choice, ensuring user makes a decision
+            .show()
+    }
+
+
 
 
     private fun startCrop(sourceUri: Uri) {
@@ -139,8 +194,22 @@ class CreatePostActivity : AppCompatActivity() {
         imageAdapter = ImagePagerAdapter(imageUris)
         viewPager.adapter = imageAdapter
 
-        binding.postImages.setOnClickListener {
-            launcher.launch("image/*")
+        binding.addPhotos.setOnClickListener {
+            Constant.showImageChooserDialog(this@CreatePostActivity, onCameraClick = {
+                imageUris.clear()
+                imageAdapter.notifyDataSetChanged()
+                setupDots() // Update dots based on cleared list
+
+                isCapturingMultiplePhotos = true // Start multi-capture mode
+                launchCamera()
+            }, onGalleryClick = {
+                imageUris.clear()
+                imageAdapter.notifyDataSetChanged()
+                setupDots() // Update dots based on cleared list
+
+                isCapturingMultiplePhotos = false // Ensure not in multi-capture mode for gallery
+                launcher.launch("image/*")
+            })
         }
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -158,6 +227,34 @@ class CreatePostActivity : AppCompatActivity() {
                 uploadImagesToCloudinary(caption, location)
             }
         }
+    }
+
+    private fun launchCamera() {
+        val photoFile: File? = try {
+            createImageFile()
+        } catch (ex: IOException) {
+            Toast.makeText(this, "Error creating image file: ${ex.message}", Toast.LENGTH_SHORT).show()
+            null
+        }
+        photoFile?.also {
+            cameraTempUri = FileProvider.getUriForFile(
+                this,
+                "${applicationContext.packageName}.provider", // Make sure this matches your manifest
+                it
+            )
+            cameraLauncher.launch(cameraTempUri!!)
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        val timeStamp: String = System.currentTimeMillis().toString()
+        val storageDir: File = filesDir // Using internal storage for temp files
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        )
     }
 
     private fun setupDots() {
