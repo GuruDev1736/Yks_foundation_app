@@ -34,49 +34,70 @@ import retrofit2.http.Query
 interface ApiInterface {
 
     @GET("society/all")
-    fun getAllSociety() : Call<GetAllSocietyResponseModel>
+    fun getAllSociety(): Call<GetAllSocietyResponseModel>
 
     @POST("auth/user/register/society/{id}")
-    fun registerUser(@Path("id") id : Int , @Body model : UserRegisterRequestModel) : Call<UserRegisterResponseModel>
+    fun registerUser(
+        @Path("id") id: Int,
+        @Body model: UserRegisterRequestModel
+    ): Call<UserRegisterResponseModel>
 
     @POST("auth/login")
-    fun login(@Body model : LoginRequestModel) : Call<LoginResponseModel>
+    fun login(@Body model: LoginRequestModel): Call<LoginResponseModel>
 
     @POST("auth/send-otp")
-    fun sendOtp(@Query("email") email : String) : Call<UniversalModel>
+    fun sendOtp(@Query("email") email: String): Call<UniversalModel>
 
     @POST("auth/validate-otp")
-    fun validateOtp(@Query("email") email : String , @Query("otp") otp : String) : Call<UniversalModel>
+    fun validateOtp(@Query("email") email: String, @Query("otp") otp: String): Call<UniversalModel>
 
     @PUT("auth/changePassword")
-    fun changePassword(@Query("email") email : String , @Query("password") password : String) : Call<UniversalModel>
+    fun changePassword(
+        @Query("email") email: String,
+        @Query("password") password: String
+    ): Call<UniversalModel>
 
     @POST("society/create")
-    fun addSociety(@Body model : AddSocietyRequestModel) : Call<AddSocietyResponseModel>
+    fun addSociety(@Body model: AddSocietyRequestModel): Call<AddSocietyResponseModel>
 
     @GET("user/society/{id}")
-    fun getAllUser(@Path("id") id : Int) : Call<GetUserBySocietyResponseModel>
+    fun getAllUser(@Path("id") id: Int): Call<GetUserBySocietyResponseModel>
 
     @POST("auth/user/register/society/{id}")
-    fun registerNewUser(@Path("id") id : Int , @Body model : CreateUserBySuperAdminRequestModel) : Call<UserRegisterResponseModel>
+    fun registerNewUser(
+        @Path("id") id: Int,
+        @Body model: CreateUserBySuperAdminRequestModel
+    ): Call<UserRegisterResponseModel>
 
     @PUT("super/changeRole/{userId}/{roleName}")
-    fun changeRole(@Path("userId") userId: Int, @Path("roleName") roleName: String): Call<UniversalModel>
+    fun changeRole(
+        @Path("userId") userId: Int,
+        @Path("roleName") roleName: String
+    ): Call<UniversalModel>
 
     @POST("auth/admin/register/society/{societyId}")
-    fun addAdmin(@Path("societyId") societyId: Int, @Body model: CreateUserBySuperAdminRequestModel): Call<UserRegisterResponseModel>
+    fun addAdmin(
+        @Path("societyId") societyId: Int,
+        @Body model: CreateUserBySuperAdminRequestModel
+    ): Call<UserRegisterResponseModel>
 
     @DELETE("user/delete/{id}")
     fun deleteUser(@Path("id") id: Int): Call<UniversalModel>
 
     @POST("super/post/create/{userId}")
-    fun createSuperAdminPost(@Path("userId") userId: Int, @Body model: CreatePostRequestModel): Call<CreatePostResponseModel>
+    fun createSuperAdminPost(
+        @Path("userId") userId: Int,
+        @Body model: CreatePostRequestModel
+    ): Call<CreatePostResponseModel>
 
     @GET("user/export/{societyId}")
     fun exportUserData(@Path("societyId") societyId: Int): Call<UniversalModel>
 
     @GET("post/")
-    fun getAllPost() : Call<GetAllPostResponseModel>
+    fun getAllPost(
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Call<GetAllPostResponseModel>
 
     @POST("likes/like/{userId}/{postId}")
     fun likePost(@Path("userId") userId: Int, @Path("postId") postId: Int): Call<UniversalModel>
@@ -109,7 +130,11 @@ interface ApiInterface {
     fun rejectPost(@Path("postId") postId: Int): Call<UniversalModel>
 
     @POST("post/create/{userId}/{societyId}")
-    fun createPost(@Path("userId") userId: Int, @Path("societyId") societyId: Int, @Body model: CreatePostRequestModel): Call<CreatePostResponseModel>
+    fun createPost(
+        @Path("userId") userId: Int,
+        @Path("societyId") societyId: Int,
+        @Body model: CreatePostRequestModel
+    ): Call<CreatePostResponseModel>
 
     @GET("user/{userId}")
     fun getUserById(@Path("userId") userId: Int): Call<GetUserByIdResponseModel>
@@ -118,24 +143,38 @@ interface ApiInterface {
     fun getUserPost(@Path("userId") userId: Int): Call<GetAllPostResponseModel>
 
     @POST("comment/create/{userId}/{postId}")
-    fun createComment(@Path("userId") userId: Int, @Path("postId") postId: Int, @Body model: CreateCommentRequestModel): Call<CreateCommentResponseModel>
+    fun createComment(
+        @Path("userId") userId: Int,
+        @Path("postId") postId: Int,
+        @Body model: CreateCommentRequestModel
+    ): Call<CreateCommentResponseModel>
 
     @POST("api/chat/send")
-    fun sendMessage(@Query("userId") userId : Int , @Query("societyId") societyId : Int , @Query("messageText") message : String ): Call<UniversalModel>
+    fun sendMessage(
+        @Query("userId") userId: Int,
+        @Query("societyId") societyId: Int,
+        @Query("messageText") message: String
+    ): Call<UniversalModel>
 
     @POST("saved/post")
-    fun savePost(@Query("userId") userId : Int , @Query("postId") postId : Int) : Call<UniversalModel>
+    fun savePost(@Query("userId") userId: Int, @Query("postId") postId: Int): Call<UniversalModel>
 
     @GET("saved/getAll/user/{userId}")
-    fun getAllSavedPost(@Path("userId") userId : Int) : Call<SavedPostResponseModel>
+    fun getAllSavedPost(@Path("userId") userId: Int): Call<SavedPostResponseModel>
 
     @PUT("user/update/{userId}")
-    fun updateProfile(@Path("userId") userId: Int, @Body model: UpdateProfileRequestModel): Call<UserRegisterResponseModel>
+    fun updateProfile(
+        @Path("userId") userId: Int,
+        @Body model: UpdateProfileRequestModel
+    ): Call<UserRegisterResponseModel>
 
     @PUT("user/update/profilePic/{userId}")
-    fun updateProfilePic(@Path("userId") userId: Int, @Body model : Map<String, String>): Call<UniversalModel>
+    fun updateProfilePic(
+        @Path("userId") userId: Int,
+        @Body model: Map<String, String>
+    ): Call<UniversalModel>
 
-    @DELETE("saved/post/delete/{id}")
-    fun deleteSavedPost(@Path("id") id : Int) : Call<UniversalModel>
+    @DELETE("saved/post/delete/{id}/user/{userId}")
+    fun deleteSavedPost(@Path("id") id: Int, @Path("userId") userId: Int): Call<UniversalModel>
 }
 

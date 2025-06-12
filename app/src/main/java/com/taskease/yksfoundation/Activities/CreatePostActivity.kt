@@ -424,10 +424,6 @@ class CreatePostActivity : AppCompatActivity() {
 
 
     fun valid(caption: String, location: String): Boolean {
-        if (caption.isEmpty()) {
-            Toast.makeText(this, "Please Enter Caption", Toast.LENGTH_SHORT).show()
-            return false
-        }
         if (location.isEmpty()) {
             Toast.makeText(this, "Please Enter Location", Toast.LENGTH_SHORT).show()
             return false

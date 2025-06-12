@@ -249,7 +249,7 @@ class ProfileFragment : Fragment() {
                         if (data != null) {
                             if (data.STS == "200") {
 
-                                adapter = PostAdapter(requireContext(), data.CONTENT)
+                                adapter = PostAdapter(requireContext(), data.CONTENT.content.toMutableList())
                                 {
                                     getPostByUserId(userId)
                                 }

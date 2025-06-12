@@ -61,7 +61,7 @@ class PostApprovalActivity : AppCompatActivity() {
                         val data = response.body()
                         if (data != null) {
                             if (data.STS == "200") {
-                                adapter = PostApprovalAdapter(this@PostApprovalActivity,data.CONTENT)
+                                adapter = PostApprovalAdapter(this@PostApprovalActivity,data.CONTENT.content)
                                 {
                                     getAllDisabledPost()
                                 }

@@ -55,10 +55,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.microedition.khronos.opengles.GL
 
-class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSuccess: () -> Unit) :
+class PostAdapter(val context: Context, val list: MutableList<GetAllPost>, val onLikeSuccess: () -> Unit) :
     RecyclerView.Adapter<PostAdapter.onViewHolder>() {
 
-    private var filteredList: List<GetAllPost> = list
+    private var filteredList: MutableList<GetAllPost> = list
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -67,6 +67,13 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
         val view = PostLayoutBinding.inflate(LayoutInflater.from(context), parent, false)
         return onViewHolder(view)
     }
+
+    fun addItems(newItems: List<GetAllPost>) {
+        val startPosition = list.size
+        list.addAll(newItems)
+        notifyItemRangeInserted(startPosition, newItems.size)
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(
@@ -92,15 +99,15 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
             val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
 
             if (data.likedBy.contains(userId)) {
-                iconLike.setImageResource(R.drawable.ic_heart)
+                iconLike.setImageResource(R.drawable.heart_filled)
             } else {
-                iconLike.setImageResource(R.drawable.ic_heart_outline)
+                iconLike.setImageResource(R.drawable.hear_outline)
             }
 
             if (data.savedBy.contains(userId)) {
-                iconSave.setImageResource(R.drawable.savedfilled)
+                iconSave.setImageResource(R.drawable.save_filled)
             } else {
-                iconSave.setImageResource(R.drawable.save)
+                iconSave.setImageResource(R.drawable.save_outline)
                 iconSave.setOnClickListener {
                     callSaveApi(data.id)
                 }
@@ -588,7 +595,7 @@ class PostAdapter(val context: Context, val list: List<GetAllPost>, val onLikeSu
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                filteredList = results?.values as List<GetAllPost>
+                filteredList = results?.values as MutableList<GetAllPost>
                 notifyDataSetChanged()
             }
         }

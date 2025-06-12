@@ -15,6 +15,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/senderLayout"
             android:orientation="vertical"
             android:layout_gravity="center"
             android:layout_width="wrap_content"

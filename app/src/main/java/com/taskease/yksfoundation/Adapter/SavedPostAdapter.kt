@@ -80,6 +80,7 @@ class SavedPostAdapter(
     ) {
         val data = filteredList[position].post
         holder.binding.apply {
+            pageCount.text = "${data.imageUrls.size}"
             Glide.with(context).load(Constant.base64ToBitmap(data.user.profile_pic.toString()))
                 .error(R.drawable.imagefalied)
                 .into(imageProfile)
@@ -195,7 +196,7 @@ class SavedPostAdapter(
             }
 
             iconSave.setOnClickListener {
-                removeSavedPost(filteredList[position].id)
+                removeSavedPost(filteredList[position].post.id)
             }
         }
     }
@@ -204,8 +205,10 @@ class SavedPostAdapter(
         val progress = CustomProgressDialog(context)
         progress.show()
 
+        val userId = SharedPreferenceManager.getInt(SharedPreferenceManager.USER_ID)
+
         try {
-            RetrofitInstance.getHeaderInstance().deleteSavedPost(id).enqueue(object :
+            RetrofitInstance.getHeaderInstance().deleteSavedPost(id,userId).enqueue(object :
                 Callback<UniversalModel> {
                 override fun onResponse(
                     call: Call<UniversalModel>,

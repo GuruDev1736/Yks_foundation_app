@@ -84,7 +84,7 @@
                 android:textStyle="bold"
                 android:layout_gravity="end"
                 android:textColor="@color/white"
-                android:text="1 / 10"/>
+                tools:text="1 / 10"/>
 
         </FrameLayout>
 

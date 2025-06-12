@@ -2,6 +2,8 @@ package com.taskease.yksfoundation.Adapter
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.provider.CalendarContract.Colors
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +31,7 @@ class ChatAdapter(private val context: Context , private val chatList: List<Chat
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
         val profilePic: CircleImageView = itemView.findViewById(R.id.profilePic)
         val name: TextView = itemView.findViewById(R.id.name)
+        val senderLayout: LinearLayout = itemView.findViewById(R.id.senderLayout)
     }
 
     inner class ReceiverViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -36,6 +39,7 @@ class ChatAdapter(private val context: Context , private val chatList: List<Chat
         val tvTimestamp: TextView = itemView.findViewById(R.id.tvTimestamp)
         val profilePic: CircleImageView = itemView.findViewById(R.id.profilePic)
         val name: TextView = itemView.findViewById(R.id.name)
+        val receiverLayout: LinearLayout = itemView.findViewById(R.id.receiverLayout)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -66,6 +70,10 @@ class ChatAdapter(private val context: Context , private val chatList: List<Chat
             holder.profilePic.setOnClickListener {
                 showUserDialog(context,chat.senderName,chat.designation, chat.profilePic)
             }
+            if (chat.senderRole == "ROLE_SUPER_ADMIN")
+            {
+                holder.senderLayout.setBackgroundColor(Color.YELLOW)
+            }
         } else if (holder is ReceiverViewHolder) {
             holder.name.text = chat.senderName
             holder.tvMessage.text = chat.message
@@ -73,6 +81,10 @@ class ChatAdapter(private val context: Context , private val chatList: List<Chat
             Glide.with(context).load(Constant.base64ToBitmap(chat.profilePic)).error(R.drawable.imagefalied).into(holder.profilePic)
             holder.profilePic.setOnClickListener {
                 showUserDialog(context,chat.senderName,chat.designation, chat.profilePic)
+            }
+            if (chat.senderRole == "ROLE_SUPER_ADMIN")
+            {
+                holder.receiverLayout.setBackgroundColor(Color.YELLOW)
             }
         }
 
