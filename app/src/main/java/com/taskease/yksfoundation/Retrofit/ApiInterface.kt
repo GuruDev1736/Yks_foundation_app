@@ -121,7 +121,10 @@ interface ApiInterface {
     fun rejectUser(@Path("userId") userId: Int): Call<UniversalModel>
 
     @GET("admin/disable/post/{societyId}")
-    fun getAllDisabledPost(@Path("societyId") societyId: Int): Call<GetAllPostResponseModel>
+    fun getAllDisabledPost(
+        @Path("societyId") societyId: Int, @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Call<GetAllPostResponseModel>
 
     @PUT("admin/enable/post/{postId}")
     fun enablePost(@Path("postId") postId: Int): Call<UniversalModel>
