@@ -125,6 +125,15 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/save" />
+
+            <ImageView
+                android:id="@+id/icon_delete"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="gone"
+                android:background="@color/red"
+                android:src="@android:drawable/ic_menu_delete" />
+
         </LinearLayout>
 
         <!-- Likes -->

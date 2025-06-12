@@ -22,6 +22,7 @@ import com.taskease.yksfoundation.Activities.SuperAdmin.AddAdminActivity
 import com.taskease.yksfoundation.Activities.SuperAdmin.SuperAdminHomeActivity
 import com.taskease.yksfoundation.Adapter.PostAdapter
 import com.taskease.yksfoundation.Adapter.PostApprovalAdapter
+import com.taskease.yksfoundation.Adapter.ProfilePostAdapter
 import com.taskease.yksfoundation.Constant.Constant
 import com.taskease.yksfoundation.Constant.CustomProgressDialog
 import com.taskease.yksfoundation.Constant.SharedPreferenceManager
@@ -37,7 +38,7 @@ import retrofit2.Response
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var adapter: PostAdapter
+    private lateinit var adapter: ProfilePostAdapter
     private var profileUrl: String? = null
     private var cameraUri: Uri? = null
 
@@ -249,7 +250,7 @@ class ProfileFragment : Fragment() {
                         if (data != null) {
                             if (data.STS == "200") {
 
-                                adapter = PostAdapter(requireContext(), data.CONTENT.content.toMutableList())
+                                adapter = ProfilePostAdapter(requireContext(), data.CONTENT.content.toMutableList())
                                 {
                                     getPostByUserId(userId)
                                 }

@@ -179,5 +179,8 @@ interface ApiInterface {
 
     @DELETE("saved/post/delete/{id}/user/{userId}")
     fun deleteSavedPost(@Path("id") id: Int, @Path("userId") userId: Int): Call<UniversalModel>
+
+    @DELETE("post/{postId}")
+    fun deletePost(@Path("postId") postId: Int): Call<UniversalModel>
 }
 
