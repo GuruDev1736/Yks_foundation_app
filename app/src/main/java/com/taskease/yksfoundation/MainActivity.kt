@@ -32,6 +32,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+
+        SharedPreferenceManager.init(this@MainActivity)
+
+        SharedPreferenceManager.removeKey(SharedPreferenceManager.NOTIFICATION_TOKEN)
+
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result
@@ -56,7 +62,6 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-        SharedPreferenceManager.init(this@MainActivity)
 
         PermissionX.init(this)
             .permissions(
